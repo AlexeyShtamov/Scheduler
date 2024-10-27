@@ -8,21 +8,25 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Проект (или же доска проекта), имеющий список участников-команду и задачи
+ * */
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Team {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
 
-    @OneToMany(mappedBy = "team")
+    private String boardName;
+
+    @OneToMany(mappedBy = "project")
     private List<Person> people;
 
-    @OneToMany(mappedBy = "team", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Task> tasks;
 }
