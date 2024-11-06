@@ -12,6 +12,7 @@ import ru.develop.schedule.domain.enums.Role;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Пользоватьель сервиса
@@ -28,18 +29,28 @@ public class Person implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private String email;
-    private String phoneNumber;
-    private String password;
+    private TimeZone timeZone;
     private String description;
+
+    private String phoneNumber;
+    private String telegram;
+    private String vk;
+
+    private String password;
+
     private Role role;
 
     @ManyToOne
     private Project project;
 
-    @ManyToMany
+    @OneToMany(mappedBy = "worker")
     private List<Task> tasks;
+
+    @OneToMany(mappedBy = "author")
+    private List<Task> authorTasks;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -49,25 +60,5 @@ public class Person implements UserDetails {
     @Override
     public String getUsername() {
         return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
     }
 }

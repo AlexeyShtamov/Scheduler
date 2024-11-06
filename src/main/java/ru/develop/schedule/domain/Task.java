@@ -9,7 +9,6 @@ import ru.develop.schedule.domain.enums.Priority;
 import ru.develop.schedule.domain.enums.Status;
 
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Задача в рамках определенного проекта-доски
@@ -25,15 +24,27 @@ public class Task {
     private Long id;
 
     private String title;
-    private Status status;
+    private String description;
     private Priority priority;
-    private LocalDate createTime;
+    private LocalDate createDate = LocalDate.now();
+    private LocalDate assignDate;
     private LocalDate deadline;
+    /**
+     * Трудозатраты
+     */
+    private double ttz;
+    private Status status;
+    //TODO
     private String review;
+    /**
+     * Исполнитель
+     */
+    @ManyToOne
+    private Person worker;
 
     @ManyToOne
-    private Project project;
+    private Person author;
 
-    @ManyToMany
-    private List<Person> people;
+    @ManyToOne
+    private Sprint sprint;
 }

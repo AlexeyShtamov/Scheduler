@@ -27,6 +27,6 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<Person> people;
 
-    @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Task> tasks;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private List<Sprint> sprint;
 }
