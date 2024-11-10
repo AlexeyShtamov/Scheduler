@@ -1,34 +1,21 @@
 package ru.develop.schedule.application;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import ru.develop.schedule.domain.Person;
-import ru.develop.schedule.extern.repositories.PersonRepository;
+import ru.develop.schedule.domain.Project;
+import ru.develop.schedule.extern.exceptions.PasswordMismatchException;
+import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
 
-import java.util.Optional;
+public interface PersonService {
+    Person save(Person person, String repeatPassword) throws PersonIsAlreadyExist, PasswordMismatchException;
 
-@Service
-@Slf4j
-public class PersonService implements UserDetailsService {
+    Person updateProfile(Person optionalPerson, Person updatePerson);
 
-    private final PersonRepository personRepository;
+    Person updateContacts(Person person, Person updatePerson);
 
-    public PersonService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
-    }
+    Person updatePassword(Person person, String password);
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    void delete(Person person);
 
-        Optional<Person> optionalPerson = personRepository.findByEmail(email);
-        if (optionalPerson.isPresent()){
-            log.info("Person with email {} is founded", email);
-            return optionalPerson.get();
-        }
-        log.warn("Person with email {} is not founded", email);
-        throw new UsernameNotFoundException(email + " not found");
-    }
+    void changeRole(Long projectId, Long personId, String role) throws Exception;
+
 }

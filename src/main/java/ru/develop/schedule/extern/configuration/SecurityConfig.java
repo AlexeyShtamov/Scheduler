@@ -12,21 +12,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.develop.schedule.application.PersonService;
+import ru.develop.schedule.application.PersonServiceImpl;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final PersonService personService;
+    private final PersonServiceImpl personServiceImpl;
 
-    public SecurityConfig(PersonService personService) {
-        this.personService = personService;
+    public SecurityConfig(PersonServiceImpl personServiceImpl) {
+        this.personServiceImpl = personServiceImpl;
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return personService;
+        return personServiceImpl;
     }
 
     @Bean
