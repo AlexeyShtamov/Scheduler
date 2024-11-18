@@ -51,4 +51,12 @@ public class SprintServiceImpl implements SprintService {
         log.info("Sprint with id {} deleted", sprintId);
     }
 
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Sprint> getAllSprintByProjectId(Long projectId) {
+        log.info("Project with id = {} get all sprints", projectId);
+
+        return projectService.findProjectById(projectId).getSprint();
+    }
 }

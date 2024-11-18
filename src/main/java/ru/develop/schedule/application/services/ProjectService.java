@@ -10,8 +10,6 @@ import java.util.List;
 public interface ProjectService {
     Project findProjectById(Long id);
 
-    List<Sprint> findAllSprintByProjectId(Long projectId);
-
     void createProject(Project project);
 
     void deleteProject(Long projectId);

@@ -123,6 +123,13 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Override
+    public Person findPersonById(Long id) {
+        return personRepository.findById(id)
+                .orElseThrow(() ->
+                        new NullPointerException("No person with id " + id));
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Optional<Person> optionalPerson = personRepository.findByEmail(email);
