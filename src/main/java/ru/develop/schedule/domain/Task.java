@@ -30,11 +30,10 @@ public class Task {
     private LocalDate assignDate;
     private LocalDate deadline;
     /**
-     * Трудозатраты
+     * Трудозатраты в часах
      */
-    private double ttz;
+    private double ttz = 0;
     private Status status;
-    //TODO
     private String review;
     /**
      * Исполнитель

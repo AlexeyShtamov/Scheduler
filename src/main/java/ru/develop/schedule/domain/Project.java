@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.develop.schedule.domain.enums.Role;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Проект (или же доска проекта), имеющий список участников-команду и задачи
@@ -33,5 +31,13 @@ public class Project {
     private List<Person> people;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private List<Sprint> sprint;
+    private List<Sprint> sprint = new ArrayList<>();
+
+    public void setPeople(List<Person> people) {
+        this.people.addAll(people);
+    }
+
+    public void setSprint(List<Sprint> sprint) {
+        this.sprint.addAll(sprint);
+    }
 }
