@@ -133,4 +133,11 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         log.warn("Person with email {} is not founded", email);
         throw new UsernameNotFoundException(email + " not found");
     }
+
+    @Override
+    public Person findById(Long id) {
+        Person person = personRepository.findById(id).orElseThrow(() -> new NullPointerException("Person with id" + id + "is not founded"));
+        log.info("Person with id {} is founded", id);
+        return person;
+    }
 }

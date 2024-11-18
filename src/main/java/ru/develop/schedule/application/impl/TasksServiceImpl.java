@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.develop.schedule.application.services.ProjectPersonService;
+import ru.develop.schedule.domain.enums.Role;
+import ru.develop.schedule.extern.exceptions.NoPermissionException;
 import ru.develop.schedule.extern.repositories.TasksRepository;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Task;
@@ -13,6 +16,7 @@ import ru.develop.schedule.application.services.SprintService;
 import ru.develop.schedule.application.services.TasksService;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class TasksServiceImpl implements TasksService {
 
     private final TasksRepository tasksRepository;
     private final SprintService sprintService;
+    private final ProjectPersonService projectPersonService;
 
     @Transactional(readOnly = true)
     @Override
@@ -45,9 +50,11 @@ public class TasksServiceImpl implements TasksService {
         return tasksRepository.findAllTaskBySprintAndWorker(sprintId, workerId);
     }
 
+    
     @Transactional
     @Override
-    public void createTask(Person currentPerson, Task task) {
+    public void createTask(Person currentPerson, Task task, Long projectId, Long personId) throws NoPermissionException {
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
         if (task != null) {
             task.setAuthor(currentPerson);
             tasksRepository.save(task);
@@ -59,7 +66,8 @@ public class TasksServiceImpl implements TasksService {
 
     @Transactional
     @Override
-    public void updateTask(Long taskId, UpdateTaskDTO updatedTask) {
+    public void updateTask(Long taskId, UpdateTaskDTO updatedTask, Long projectId, Long personId) throws NoPermissionException {
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
         Task task = findTaskById(taskId);
 
         task.setTitle(updatedTask.title());
@@ -78,8 +86,28 @@ public class TasksServiceImpl implements TasksService {
 
     @Transactional
     @Override
-    public void deleteTask(Long taskId) {
+    public void deleteTask(Long taskId, Long projectId, Long personId) throws NoPermissionException {
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR), projectId, personId);
         tasksRepository.delete(findTaskById(taskId));
         log.info("task {} deleted", taskId);
+    }
+
+    @Transactional
+    @Override
+    public void reviewTask(Long taskId, String comment, Long projectId, Long personId) throws NoPermissionException {
+        projectPersonService.checkPermission(Set.of(Role.ROLE_TUTOR), projectId, personId);
+        Task task = findTaskById(taskId);
+        task.setReview(comment);
+        task.setStatus(Status.REVIEW);
+        log.info("task {} reviewed", taskId);
+
+    }
+
+    @Transactional
+    @Override
+    public void changeStatus(Long taskId, Status status, Long projectId, Long personId) {
+        Task task = findTaskById(taskId);
+        task.setStatus(status);
+        log.info("Status is changed in task {}", taskId);
     }
 }
