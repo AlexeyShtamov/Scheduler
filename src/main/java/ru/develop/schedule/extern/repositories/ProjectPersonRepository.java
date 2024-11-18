@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;
 
+import java.util.Optional;
+
 @Repository
 public interface ProjectPersonRepository extends JpaRepository<ProjectPerson, ProjectPersonId> {
 

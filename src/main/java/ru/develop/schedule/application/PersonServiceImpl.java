@@ -1,5 +1,7 @@
 package ru.develop.schedule.application;
 
+import ch.qos.logback.core.util.StringUtil;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -7,13 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.develop.schedule.domain.Person;
-import ru.develop.schedule.domain.Project;
 import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;
 import ru.develop.schedule.domain.enums.Role;
 import ru.develop.schedule.extern.exceptions.PasswordMismatchException;
 import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
-import ru.develop.schedule.extern.exceptions.PersonNotFoundException;
 import ru.develop.schedule.extern.repositories.PersonRepository;
 import ru.develop.schedule.extern.repositories.ProjectPersonRepository;
 
@@ -33,6 +33,7 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         this.projectPersonRepository = projectPersonRepository;
     }
 
+    @Transactional
     public Person save(Person person, String repeatPassword) throws PersonIsAlreadyExist, PasswordMismatchException {
 
         if (personRepository.findByEmail(person.getEmail()).isPresent()){
@@ -48,6 +49,7 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         return createdPerson;
     }
 
+    @Transactional
     public Person updateProfile(Person person, Person updatePerson){
 
         if (updatePerson.getFirstName() != null && !updatePerson.getFirstName().equals(person.getFirstName())){
@@ -71,6 +73,7 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         return updatedPerson;
     }
 
+    @Transactional
     public Person updateContacts(Person person, Person updatePerson){
 
         if (!updatePerson.getPhoneNumber().equals(person.getFirstName())){
@@ -88,10 +91,10 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         return updatedPerson;
     }
 
-
+    @Transactional
     public Person updatePassword(Person person, String password){
 
-        if (password != null) {
+        if (StringUtil.isNullOrEmpty(password)) {
             person.setPassword(passwordEncoder.encode(password));
             person = personRepository.save(person);
         }
@@ -99,18 +102,23 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         return person;
     }
 
+    @Transactional
     public void delete(Person person){
-
         personRepository.delete(person);
         log.info("{} {}: Person is deleted", person.getFirstName(), person.getLastName());
     }
 
-
-    public void changeRole(Long projectId, Long personId, String role) throws Exception {
-        ProjectPerson projectPerson = projectPersonRepository.findById(new ProjectPersonId(projectId, personId)).orElseThrow(Exception::new);
+    @Transactional
+    public void changeRole(Long projectId, Long personId, String role){
+        ProjectPerson projectPerson = projectPersonRepository.findById(new ProjectPersonId(projectId, personId))
+                .orElseThrow(() -> new NullPointerException("No person with id " + personId + " in project with id " + projectId));
         projectPerson.setRole(Role.valueOf(role));
         projectPersonRepository.save(projectPerson);
         log.info("Person id {}: Person's role is changed on {} in project with id {}", personId, projectId, role);
+    }
+
+    public void makeReview(){
+        //TODO
     }
 
     @Override
