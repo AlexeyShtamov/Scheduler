@@ -8,10 +8,11 @@ import ru.develop.schedule.extern.repositories.TasksRepository;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Task;
 import ru.develop.schedule.domain.enums.Status;
-import ru.develop.schedule.extern.UpdateTaskDTO;
+import ru.develop.schedule.extern.dto.UpdateTaskDTO;
 import ru.develop.schedule.application.services.SprintService;
 import ru.develop.schedule.application.services.TasksService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,6 +51,7 @@ public class TasksServiceImpl implements TasksService {
     public void createTask(Person currentPerson, Task task) {
         if (task != null) {
             task.setAuthor(currentPerson);
+            task.setCreateDate(LocalDate.now());
             tasksRepository.save(task);
             log.info("Task created with author {}", currentPerson.getId());
         }

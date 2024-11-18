@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.develop.schedule.extern.repositories.SprintRepository;
-import ru.develop.schedule.domain.Sprint;
+import ru.develop.schedule.application.services.ProjectService;
 import ru.develop.schedule.application.services.SprintService;
+import ru.develop.schedule.domain.Sprint;
+import ru.develop.schedule.extern.repositories.SprintRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +17,7 @@ import ru.develop.schedule.application.services.SprintService;
 public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
+    private final ProjectService projectService;
 
     @Transactional(readOnly = true)
     @Override
@@ -37,5 +41,13 @@ public class SprintServiceImpl implements SprintService {
     public void deleteSprint(Long sprintId) {
         sprintRepository.deleteById(sprintId);
         log.info("Sprint with id {} deleted", sprintId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Sprint> getAllSprintByProjectId(Long projectId) {
+        log.info("Project with id = {} get all sprints", projectId);
+
+        return projectService.findProjectById(projectId).getSprint();
     }
 }

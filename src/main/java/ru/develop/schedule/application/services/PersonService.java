@@ -20,4 +20,5 @@ public interface PersonService extends UserDetailsService {
 
     void makeReview();
 
+    Person findPersonById(Long id);
 }

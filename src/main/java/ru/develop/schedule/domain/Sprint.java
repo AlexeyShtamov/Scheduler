@@ -1,8 +1,12 @@
 package ru.develop.schedule.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +14,8 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "tbl_sprint")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Sprint {
 
     @Id
@@ -23,13 +29,13 @@ public class Sprint {
      * Дата начала спринта
      */
     @Column(nullable = false)
-    private Date startTime;
+    private LocalDate startTime;
 
     /**
      * Дата конца спринта
      */
     @Column(nullable = false)
-    private Date endTime;
+    private LocalDate endTime;
 
     @OneToMany(mappedBy = "sprint", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();

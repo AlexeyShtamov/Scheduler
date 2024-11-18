@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.develop.schedule.extern.repositories.ProjectRepository;
+import ru.develop.schedule.application.services.ProjectService;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Project;
 import ru.develop.schedule.domain.Sprint;
-import ru.develop.schedule.application.services.ProjectService;
+import ru.develop.schedule.extern.repositories.ProjectRepository;
 
 import java.util.List;
 
@@ -26,11 +26,6 @@ public class ProjectServiceImpl implements ProjectService {
             log.error("Project with id {} not found", id);
             return new NullPointerException("Project not found");
         });
-    }
-
-    @Override
-    public List<Sprint> findAllSprintByProjectId(Long projectId) {
-        return findProjectById(projectId).getSprint();
     }
 
     @Transactional
@@ -69,13 +64,5 @@ public class ProjectServiceImpl implements ProjectService {
         log.info("Project with id = {} added persons", projectId);
 
         projectRepository.save(project);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Sprint> getAllSprintByProjectId(Long projectId) {
-        log.info("Project with id = {} get all sprints", projectId);
-
-        return findProjectById(projectId).getSprint();
     }
 }
