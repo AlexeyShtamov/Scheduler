@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.develop.schedule.domain.enums.Role;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Проект (или же доска проекта), имеющий список участников-команду и задачи
@@ -24,7 +26,10 @@ public class Project {
 
     private String boardName;
 
-    @OneToMany(mappedBy = "project")
+    /**
+     *  участники
+     */
+    @ManyToMany
     private List<Person> people;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)

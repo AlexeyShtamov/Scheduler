@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.develop.schedule.application.PersonService;
+import ru.develop.schedule.application.PersonServiceImpl;
 
 @RestController
 @RequestMapping("/test")
