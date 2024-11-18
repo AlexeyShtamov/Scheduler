@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.develop.schedule.application.repository.ProjectRepository;
+import ru.develop.schedule.extern.repositories.ProjectRepository;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Project;
 import ru.develop.schedule.domain.Sprint;
-import ru.develop.schedule.extern.repositories.ProjectService;
+import ru.develop.schedule.application.services.ProjectService;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package ru.develop.schedule.application.repository;
+package ru.develop.schedule.extern.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.develop.schedule.domain.Task;

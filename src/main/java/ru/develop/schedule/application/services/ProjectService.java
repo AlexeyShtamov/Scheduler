@@ -1,4 +1,4 @@
-package ru.develop.schedule.extern.repositories;
+package ru.develop.schedule.application.services;
 
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Project;

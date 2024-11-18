@@ -1,4 +1,4 @@
-package ru.develop.schedule.application;
+package ru.develop.schedule.application.impl;
 
 import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.develop.schedule.application.services.PersonService;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;

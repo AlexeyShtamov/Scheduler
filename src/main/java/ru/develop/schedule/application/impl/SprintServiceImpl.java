@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.develop.schedule.application.repository.SprintRepository;
+import ru.develop.schedule.extern.repositories.SprintRepository;
 import ru.develop.schedule.domain.Sprint;
-import ru.develop.schedule.extern.repositories.SprintService;
+import ru.develop.schedule.application.services.SprintService;
 
 @Service
 @RequiredArgsConstructor

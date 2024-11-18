@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.develop.schedule.application.repository.TasksRepository;
+import ru.develop.schedule.extern.repositories.TasksRepository;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Task;
 import ru.develop.schedule.domain.enums.Status;
 import ru.develop.schedule.extern.UpdateTaskDTO;
-import ru.develop.schedule.extern.repositories.SprintService;
-import ru.develop.schedule.extern.repositories.TasksService;
+import ru.develop.schedule.application.services.SprintService;
+import ru.develop.schedule.application.services.TasksService;
 
 import java.util.List;
 

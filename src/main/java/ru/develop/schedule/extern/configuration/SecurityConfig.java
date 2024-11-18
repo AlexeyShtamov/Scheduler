@@ -12,8 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.develop.schedule.application.impl.PersonService;
-import ru.develop.schedule.application.PersonServiceImpl;
+import ru.develop.schedule.application.services.PersonService;
 
 @Configuration
 @EnableWebSecurity

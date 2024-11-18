@@ -1,4 +1,4 @@
-package ru.develop.schedule.application;
+package ru.develop.schedule.application.services;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.develop.schedule.domain.Person;
