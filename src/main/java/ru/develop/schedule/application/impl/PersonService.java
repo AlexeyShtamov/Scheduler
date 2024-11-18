@@ -1,4 +1,4 @@
-package ru.develop.schedule.application;
+package ru.develop.schedule.application.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +24,7 @@ public class PersonService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Optional<Person> optionalPerson = personRepository.findByEmail(email);
-        if (optionalPerson.isPresent()){
+        if (optionalPerson.isPresent()) {
             log.info("Person with email {} is founded", email);
             return optionalPerson.get();
         }
