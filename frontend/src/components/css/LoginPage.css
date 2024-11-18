@@ -1,0 +1,38 @@
+
+.auth-form{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    width: 353px;
+    margin: 0 auto;
+    margin-top: 159px;
+    margin-bottom: 247px;
+    gap: 29px;
+  }
+
+.auth-form .enter-text {
+    margin-bottom: 65px;
+    color: #FF8513;
+    font-family: 'Roboto', serif;
+    font-weight: 500;
+    font-size: 65px;
+    line-height: 45px;
+}
+
+.auth-form .form-button{
+    margin-right: 17px;
+    background-color: #FF8513;
+    border-radius: 25px;
+    padding: 10px 50px;
+    margin-bottom: 20px;
+}
+
+.auth-form .form-span{
+    color: #FF8513;
+    cursor: pointer;
+}
+
+.social-icon{
+    margin-right: 19px;
+}
+

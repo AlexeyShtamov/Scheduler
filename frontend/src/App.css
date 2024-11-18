@@ -220,12 +220,13 @@ main {
 }
 
 .main-footer{
-  display: flex;
-  margin-bottom: 77px;
+  display: flex;                /* Включаем Flexbox для футера */
+  justify-content: space-between; /* Распределяем элементы футера по сторонам */
+  align-items: center;
+  padding-bottom: 60px;
+  padding-right: 170px;
 }
-.main-footer .logo{
-  margin-right: 165px;
-}
+
 
 .footer-text{
   margin-right: 80px;
@@ -235,3 +236,5 @@ main {
   width: 297px;
   color:#312426;
 }
+
+

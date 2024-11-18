@@ -8,8 +8,8 @@ import youtubeIcon from '../assets/youtube-icon.svg';
 import { useNavigate } from "react-router-dom";
 
 
-const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
+const RegisterPage: React.FC = () => {
+    const navigate = useNavigate();
 
    return (
     <div className="App">
@@ -21,15 +21,19 @@ const LoginPage: React.FC = () => {
           </div>
           </nav>
           </header>
-          <form className="auth-form">
-          <Typography className="enter-text" variant="h1" component="h2">Вход</Typography>
+          <div className="auth-form">
+          <Typography className="enter-text" variant="h1" component="h2">Регистрация</Typography>
+          <TextField className="form-item" type="text" id="name" label="Имя" variant="outlined" />
+          <TextField className="form-item" type="text" id="surname" label="Фамилия" variant="outlined" />
+          <TextField className="form-item" type="tel" id="tel" label="Номер телефона" variant="outlined" />
           <TextField className="form-item" type="email" id="Email" label="Почта" variant="outlined" />
           <TextField className="form-item" id="Password" label="Пароль"  type="password" variant="outlined" />
+          <TextField className="form-item" id="Password" label="Повторный пароль"  type="password" variant="outlined" />
           <div className="form-footer">
-          <Button  className="form-button" variant="contained">Войти</Button>
-          <span className="form-span" onClick={() => navigate('/register')}>Нет аккаунта?</span>
+          <Button  className="form-button" variant="contained">Зарегистрироваться</Button>
+          <span className="form-span" onClick={() => navigate('/login')}>Есть аккаунт?</span>
           </div>
-          </form>
+          </div>
           <footer className='main-footer'>
       <div className="logo">
             <img src={logo} alt="BrainStorm Logo" className="logo-image"></img>
@@ -53,4 +57,4 @@ const LoginPage: React.FC = () => {
 );
 };
 
-export { LoginPage };
+export { RegisterPage };
