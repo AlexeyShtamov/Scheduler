@@ -51,6 +51,7 @@ public class SprintController {
                                              @RequestParam Long personId) {
         try {
             sprintService.deleteSprint(sprintId, projectId, personId);
+
             return ResponseEntity.noContent().build();
         } catch (NoPermissionException e) {
             return ResponseEntity.status(403).build();

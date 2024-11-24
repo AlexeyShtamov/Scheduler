@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.develop.schedule.application.services.PersonService;
+import ru.develop.schedule.application.services.ProjectPersonService;
 import ru.develop.schedule.application.services.ProjectService;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Project;
@@ -19,6 +20,7 @@ public class ProjectController {
     private final ProjectService projectService;
     private final ProjectMapper projectMapper;
     private final PersonService personService;
+    private final ProjectPersonService projectPersonService;
 
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long projectId) {
@@ -51,10 +53,18 @@ public class ProjectController {
     }
 
     @SneakyThrows
-    @PutMapping("/{projectId}")
+    @PutMapping("/{projectId}/people")
     public ResponseEntity<Void> addPersonForProject(@PathVariable Long projectId, @RequestBody Long userID, @RequestBody String emails) {
         Person person = personService.findByEmail(emails);
         projectService.addPersonForProject(projectId, userID, person);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{projectId}")
+    public ResponseEntity<Void> addSpecialPersonForProject(@PathVariable Long projectId, @RequestBody Long userID,
+                                                           @RequestBody String role) {
+        projectPersonService.addSpecialPerson(projectId, userID, role);
 
         return ResponseEntity.noContent().build();
     }

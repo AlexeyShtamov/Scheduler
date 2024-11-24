@@ -77,6 +77,7 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    @SneakyThrows
     @PutMapping("/{taskId}")
     public ResponseEntity<Void> changeStatus(@PathVariable Long taskId, @RequestParam Status status,
                                              @RequestParam Long projectId, @RequestParam Long userId) {
