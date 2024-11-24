@@ -9,9 +9,12 @@ import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;
 import ru.develop.schedule.domain.enums.Role;
 import ru.develop.schedule.extern.exceptions.NoPermissionException;
-import ru.develop.schedule.extern.repositories.SprintRepository;
-import ru.develop.schedule.domain.Sprint;
+import ru.develop.schedule.application.services.ProjectService;
 import ru.develop.schedule.application.services.SprintService;
+import ru.develop.schedule.domain.Sprint;
+import ru.develop.schedule.extern.repositories.SprintRepository;
+
+import java.util.List;
 
 import java.util.Set;
 
@@ -21,6 +24,7 @@ import java.util.Set;
 public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
+    private final ProjectService projectService;
 
     private final ProjectPersonService projectPersonService;
 
@@ -50,7 +54,6 @@ public class SprintServiceImpl implements SprintService {
         sprintRepository.deleteById(sprintId);
         log.info("Sprint with id {} deleted", sprintId);
     }
-
 
     @Transactional(readOnly = true)
     @Override

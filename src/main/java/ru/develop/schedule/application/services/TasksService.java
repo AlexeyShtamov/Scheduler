@@ -5,6 +5,7 @@ import ru.develop.schedule.domain.Task;
 import ru.develop.schedule.domain.enums.Status;
 import ru.develop.schedule.extern.UpdateTaskDTO;
 import ru.develop.schedule.extern.exceptions.NoPermissionException;
+import ru.develop.schedule.extern.dto.UpdateTaskDTO;
 
 import java.util.List;
 

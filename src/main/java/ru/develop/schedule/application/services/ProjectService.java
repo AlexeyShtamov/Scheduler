@@ -19,4 +19,5 @@ public interface ProjectService {
     void addPersonForProject(Long projectId, Long personId, List<Person> persons) throws NoPermissionException;
 
     List<Sprint> getAllSprintByProjectId(Long projectId);
+    void addPersonForProject(Long projectId, List<Person> persons);
 }
