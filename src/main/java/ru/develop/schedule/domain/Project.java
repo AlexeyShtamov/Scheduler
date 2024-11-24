@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Проект (или же доска проекта), имеющий список участников-команду и задачи
- */
+ * */
 @Entity
 @Data
 @Builder
@@ -26,13 +26,17 @@ public class Project {
     private String boardName;
 
     /**
-     * участники
+     *  участники
      */
-    @OneToMany(mappedBy = "project")
-    private List<Person> people;
+    @ManyToMany
+    private List<Person> people = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<Sprint> sprint = new ArrayList<>();
+
+    public void setPeople(Person people) {
+        this.people.add(people);
+    }
 
     public void setPeople(List<Person> people) {
         this.people.addAll(people);

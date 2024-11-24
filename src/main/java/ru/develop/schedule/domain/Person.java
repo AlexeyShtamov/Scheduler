@@ -43,8 +43,8 @@ public class Person implements UserDetails {
 
     private Role role;
 
-    @ManyToOne
-    private Project project;
+    @ManyToMany
+    private List<Project> project;
 
     @OneToMany(mappedBy = "worker")
     private List<Task> tasks;
