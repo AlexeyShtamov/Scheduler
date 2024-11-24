@@ -13,6 +13,8 @@ public interface TasksService {
 
     Task findTaskById(Long taskId);
 
+    List<Task> findAllTaskBySprint(Long sprintUuid);
+
     List<Task> findAllTaskBySprintIdAndPerson(Long sprintId, Long personId);
 
     void createTask(Person currentPerson, Task task, Long projectId, Long personId) throws NoPermissionException;

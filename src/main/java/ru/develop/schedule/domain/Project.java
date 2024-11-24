@@ -29,10 +29,14 @@ public class Project {
      *  участники
      */
     @ManyToMany
-    private List<Person> people;
+    private List<Person> people = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<Sprint> sprint = new ArrayList<>();
+
+    public void setPeople(Person people) {
+        this.people.add(people);
+    }
 
     public void setPeople(List<Person> people) {
         this.people.addAll(people);

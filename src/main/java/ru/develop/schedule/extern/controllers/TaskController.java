@@ -15,7 +15,7 @@ import ru.develop.schedule.extern.mapper.TaskMapper;
 
 import java.util.List;
 
-@RestController()
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("api/tasks")
 public class TaskController {
@@ -34,6 +34,16 @@ public class TaskController {
     public ResponseEntity<List<TaskDTO>> getTasksForSprintAndState(@RequestParam Long sprintId,
                                                                    @RequestParam Status status) {
         List<TaskDTO> listTaskDto = tasksService.findAllTaskBySprintAndState(sprintId, status)
+                .stream()
+                .map(taskMapper::getTaskDTOFromTask)
+                .toList();
+
+        return ResponseEntity.ok(listTaskDto);
+    }
+
+    @GetMapping("/sprints/{sprintId}")
+    public ResponseEntity<List<TaskDTO>> getTasksForSprint(@PathVariable Long sprintId) {
+        List<TaskDTO> listTaskDto = tasksService.findAllTaskBySprint(sprintId)
                 .stream()
                 .map(taskMapper::getTaskDTOFromTask)
                 .toList();
@@ -63,6 +73,23 @@ public class TaskController {
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, @RequestParam Long projectId, @RequestParam Long userId) {
         tasksService.deleteTask(taskId, projectId, userId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{taskId}")
+    public ResponseEntity<Void> changeStatus(@PathVariable Long taskId, @RequestParam Status status,
+                                             @RequestParam Long projectId, @RequestParam Long userId) {
+        tasksService.changeStatus(taskId, status, projectId, userId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @SneakyThrows
+    @PutMapping("rewiew/{taskId}")
+    public ResponseEntity<Void> reviewTask(@PathVariable Long taskId, @RequestParam Long projectId,
+                                           @RequestParam Long userId, @RequestParam String comment) {
+        tasksService.reviewTask(taskId, comment, projectId, userId);
 
         return ResponseEntity.noContent().build();
     }

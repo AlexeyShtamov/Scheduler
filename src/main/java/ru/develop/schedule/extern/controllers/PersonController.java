@@ -43,14 +43,10 @@ public class PersonController {
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
     }
 
-    @PutMapping("/profile/{id}")
+    @PutMapping("/password/{id}")
     public ResponseEntity<InfoPersonDTO> updateProfile(@RequestBody UpdatePasswordDTO updatePasswordDTO, @PathVariable Long id) throws IncorrectPasswordException {
         Person person = personService.updatePassword(id, updatePasswordDTO.password(), updatePasswordDTO.repeatPassword());
         Person updatedPerson = personService.updateProfile(id, person);
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
     }
-
-
-
-
 }

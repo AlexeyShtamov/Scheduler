@@ -8,4 +8,6 @@ import java.util.List;
 public interface TasksRepository extends JpaRepository<Task, Long> {
 
     List<Task> findAllTaskBySprintIdAndWorkerId(Long sprintUuid, Long workerUuid);
+
+    List<Task> findAllTaskBySprintId(Long sprintUuid);
 }

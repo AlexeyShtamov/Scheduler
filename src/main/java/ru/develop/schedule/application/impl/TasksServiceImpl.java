@@ -5,15 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.develop.schedule.application.services.ProjectPersonService;
-import ru.develop.schedule.domain.enums.Role;
-import ru.develop.schedule.extern.exceptions.NoPermissionException;
-import ru.develop.schedule.extern.repositories.TasksRepository;
-import ru.develop.schedule.domain.Person;
-import ru.develop.schedule.domain.Task;
-import ru.develop.schedule.domain.enums.Status;
-import ru.develop.schedule.extern.dto.UpdateTaskDTO;
 import ru.develop.schedule.application.services.SprintService;
 import ru.develop.schedule.application.services.TasksService;
+import ru.develop.schedule.domain.Person;
+import ru.develop.schedule.domain.Sprint;
+import ru.develop.schedule.domain.Task;
+import ru.develop.schedule.domain.enums.Role;
+import ru.develop.schedule.domain.enums.Status;
+import ru.develop.schedule.extern.dto.UpdateTaskDTO;
+import ru.develop.schedule.extern.exceptions.NoPermissionException;
+import ru.develop.schedule.extern.repositories.TasksRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,13 +46,20 @@ public class TasksServiceImpl implements TasksService {
                 });
     }
 
+    @Override
+    public List<Task> findAllTaskBySprint(Long sprintUuid) {
+        Sprint sprint = sprintService.findSprintById(sprintUuid);
+
+        return tasksRepository.findAllTaskBySprintId(sprintUuid);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<Task> findAllTaskBySprintIdAndPerson(Long sprintId, Long workerId) {
         return tasksRepository.findAllTaskBySprintIdAndWorkerId(sprintId, workerId);
     }
 
-    
+
     @Transactional
     @Override
     public void createTask(Person currentPerson, Task task, Long projectId, Long personId) throws NoPermissionException {
