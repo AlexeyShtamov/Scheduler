@@ -1,6 +1,7 @@
 package ru.develop.schedule.extern.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.develop.schedule.application.services.PersonService;
@@ -40,27 +41,28 @@ public class TaskController {
         return ResponseEntity.ok(listTaskDto);
     }
 
+    @SneakyThrows
     @PostMapping
-    public ResponseEntity<Void> createTask(@RequestBody TaskDTO taskDTO, @RequestParam Long userId) {
+    public ResponseEntity<Void> createTask(@RequestBody TaskDTO taskDTO, @RequestParam Long userId, @RequestParam Long projectId) {
         Person person = personService.findPersonById(userId);
         Task task = taskMapper.getTaskFromTaskDTO(taskDTO);
-        tasksService.createTask(person, task);
+        tasksService.createTask(person, task, projectId, userId);
 
         return ResponseEntity.noContent().build();
     }
 
+    @SneakyThrows
     @PutMapping
-    public ResponseEntity<Void> updateTask(@RequestBody UpdateTaskDTO taskDTO, @RequestParam Long userId) {
-        //Person person = personService.findPersonById(userId);
-        //TODO не знаю что будет по правам, может нужен будет user в запросе
-        tasksService.updateTask(taskDTO.id(), taskDTO);
+    public ResponseEntity<Void> updateTask(@RequestBody UpdateTaskDTO taskDTO, @RequestParam Long userId, @RequestParam Long projectId) {
+        tasksService.updateTask(taskDTO.id(), taskDTO, projectId, userId);
 
         return ResponseEntity.noContent().build();
     }
 
+    @SneakyThrows
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
-        tasksService.deleteTask(taskId);
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, @RequestParam Long projectId, @RequestParam Long userId) {
+        tasksService.deleteTask(taskId, projectId, userId);
 
         return ResponseEntity.noContent().build();
     }

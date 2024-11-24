@@ -3,6 +3,7 @@ package ru.develop.schedule.application.impl;
 import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,7 +29,7 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     private final PasswordEncoder passwordEncoder;
     private final ProjectPersonRepository projectPersonRepository;
 
-    public PersonServiceImpl(PersonRepository personRepository, PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository) {
+    public PersonServiceImpl(PersonRepository personRepository, @Lazy PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository) {
         this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
         this.projectPersonRepository = projectPersonRepository;
@@ -139,12 +140,5 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         }
         log.warn("Person with email {} is not founded", email);
         throw new UsernameNotFoundException(email + " not found");
-    }
-
-    @Override
-    public Person findById(Long id) {
-        Person person = personRepository.findById(id).orElseThrow(() -> new NullPointerException("Person with id" + id + "is not founded"));
-        log.info("Person with id {} is founded", id);
-        return person;
     }
 }

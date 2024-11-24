@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TasksRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findAllTaskBySprintAndWorker(Long sprintUuid, Long workerUuid);
+    List<Task> findAllTaskBySprintIdAndWorkerId(Long sprintUuid, Long workerUuid);
 }

@@ -80,14 +80,4 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.save(project);
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Sprint> getAllSprintByProjectId(Long projectId) {
-        log.info("Project with id = {} get all sprints", projectId);
-
-        return findProjectById(projectId).getSprint();
-    }
-
-
 }

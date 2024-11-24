@@ -48,7 +48,7 @@ public class TasksServiceImpl implements TasksService {
     @Transactional(readOnly = true)
     @Override
     public List<Task> findAllTaskBySprintIdAndPerson(Long sprintId, Long workerId) {
-        return tasksRepository.findAllTaskBySprintAndWorker(sprintId, workerId);
+        return tasksRepository.findAllTaskBySprintIdAndWorkerId(sprintId, workerId);
     }
 
     

@@ -1,12 +1,16 @@
 package ru.develop.schedule.extern.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.develop.schedule.application.services.SprintService;
+import ru.develop.schedule.domain.Sprint;
 import ru.develop.schedule.extern.dto.SprintDTO;
+import ru.develop.schedule.extern.exceptions.NoPermissionException;
 import ru.develop.schedule.extern.mapper.SprintMapper;
 
+import java.io.Serializable;
 import java.util.List;
 
 @RestController
@@ -23,9 +27,10 @@ public class SprintController {
         return ResponseEntity.ok(sprintDTO);
     }
 
+    @SneakyThrows
     @PostMapping
-    public ResponseEntity<SprintDTO> createSprint(@RequestBody SprintDTO sprintDTO) {
-        sprintService.createSprint(sprintMapper.getSprintFromDto(sprintDTO));
+    public ResponseEntity<SprintDTO> createSprint(@RequestBody SprintDTO sprintDTO, @RequestParam Long personID ) {
+        sprintService.createSprint(sprintMapper.getSprintFromDto(sprintDTO),personID,sprintDTO.projectId());
 
         return ResponseEntity.ok(sprintDTO);
     }
@@ -41,10 +46,16 @@ public class SprintController {
     }
 
     @DeleteMapping("/{sprintId}")
-    public ResponseEntity<Void> deleteSprint(@PathVariable Long sprintId) {
-        sprintService.deleteSprint(sprintId);
+    public ResponseEntity<Void> deleteSprint(@PathVariable Long sprintId,
+                                             @RequestParam Long projectId,
+                                             @RequestParam Long personId) {
+        try {
+            sprintService.deleteSprint(sprintId, projectId, personId);
+            return ResponseEntity.noContent().build();
+        } catch (NoPermissionException e) {
+            return ResponseEntity.status(403).build();
+        }
 
-        return ResponseEntity.noContent().build();
     }
 
 }
