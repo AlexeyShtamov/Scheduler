@@ -1,4 +1,4 @@
-package ru.develop.schedule.extern;
+package ru.develop.schedule.extern.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +10,7 @@ import ru.develop.schedule.domain.enums.Status;
 import java.time.LocalDate;
 
 public record UpdateTaskDTO(
+        @NotNull @NotEmpty Long id,
         @NotNull @NotEmpty String title,
         String description,
         @NotNull @NotEmpty Priority priority,

@@ -10,8 +10,6 @@ import java.util.List;
 public interface ProjectService {
     Project findProjectById(Long id);
 
-    List<Sprint> findAllSprintByProjectId(Long projectId);
-
     void createProject(Project project);
 
     void deleteProject(Long projectId);
@@ -19,6 +17,4 @@ public interface ProjectService {
     void updateProject(Long projectId, Long personId, String boardName) throws NoPermissionException;
 
     void addPersonForProject(Long projectId, Long personId, List<Person> persons) throws NoPermissionException;
-
-    List<Sprint> getAllSprintByProjectId(Long projectId);
 }

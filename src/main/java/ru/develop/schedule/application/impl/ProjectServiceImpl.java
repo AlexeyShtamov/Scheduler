@@ -7,11 +7,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.develop.schedule.application.services.ProjectPersonService;
-import ru.develop.schedule.domain.*;
+import ru.develop.schedule.application.services.ProjectService;
+import ru.develop.schedule.domain.Person;
+import ru.develop.schedule.domain.Project;
+import ru.develop.schedule.domain.Sprint;
 import ru.develop.schedule.domain.enums.Role;
 import ru.develop.schedule.extern.exceptions.NoPermissionException;
 import ru.develop.schedule.extern.repositories.ProjectRepository;
-import ru.develop.schedule.application.services.ProjectService;
 
 import java.util.List;
 import java.util.Set;
@@ -33,14 +35,8 @@ public class ProjectServiceImpl implements ProjectService {
         });
     }
 
-    @Override
-    public List<Sprint> findAllSprintByProjectId(Long projectId) {
-        return findProjectById(projectId).getSprint();
-    }
-
-
-    @Override
     @Transactional
+    @Override
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void createProject(Project project) {
         projectRepository.save(project);
@@ -84,14 +80,4 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.save(project);
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Sprint> getAllSprintByProjectId(Long projectId) {
-        log.info("Project with id = {} get all sprints", projectId);
-
-        return findProjectById(projectId).getSprint();
-    }
-
-
 }

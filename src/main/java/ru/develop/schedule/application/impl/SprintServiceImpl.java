@@ -5,14 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.develop.schedule.application.services.ProjectPersonService;
-import ru.develop.schedule.domain.ProjectPerson;
-import ru.develop.schedule.domain.ProjectPersonId;
+import ru.develop.schedule.application.services.ProjectService;
+import ru.develop.schedule.application.services.SprintService;
+import ru.develop.schedule.domain.Sprint;
 import ru.develop.schedule.domain.enums.Role;
 import ru.develop.schedule.extern.exceptions.NoPermissionException;
 import ru.develop.schedule.extern.repositories.SprintRepository;
-import ru.develop.schedule.domain.Sprint;
-import ru.develop.schedule.application.services.SprintService;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -21,6 +21,7 @@ import java.util.Set;
 public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
+    private final ProjectService projectService;
 
     private final ProjectPersonService projectPersonService;
 
@@ -51,4 +52,11 @@ public class SprintServiceImpl implements SprintService {
         log.info("Sprint with id {} deleted", sprintId);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<Sprint> getAllSprintByProjectId(Long projectId) {
+        log.info("Project with id = {} get all sprints", projectId);
+
+        return projectService.findProjectById(projectId).getSprint();
+    }
 }

@@ -3,7 +3,7 @@ package ru.develop.schedule.application.services;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Task;
 import ru.develop.schedule.domain.enums.Status;
-import ru.develop.schedule.extern.UpdateTaskDTO;
+import ru.develop.schedule.extern.dto.UpdateTaskDTO;
 import ru.develop.schedule.extern.exceptions.NoPermissionException;
 
 import java.util.List;

@@ -11,10 +11,11 @@ import ru.develop.schedule.extern.repositories.TasksRepository;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Task;
 import ru.develop.schedule.domain.enums.Status;
-import ru.develop.schedule.extern.UpdateTaskDTO;
+import ru.develop.schedule.extern.dto.UpdateTaskDTO;
 import ru.develop.schedule.application.services.SprintService;
 import ru.develop.schedule.application.services.TasksService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +48,7 @@ public class TasksServiceImpl implements TasksService {
     @Transactional(readOnly = true)
     @Override
     public List<Task> findAllTaskBySprintIdAndPerson(Long sprintId, Long workerId) {
-        return tasksRepository.findAllTaskBySprintAndWorker(sprintId, workerId);
+        return tasksRepository.findAllTaskBySprintIdAndWorkerId(sprintId, workerId);
     }
 
     
@@ -57,6 +58,7 @@ public class TasksServiceImpl implements TasksService {
         projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
         if (task != null) {
             task.setAuthor(currentPerson);
+            task.setCreateDate(LocalDate.now());
             tasksRepository.save(task);
             log.info("Task created with author {}", currentPerson.getId());
         }
