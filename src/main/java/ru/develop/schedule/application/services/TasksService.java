@@ -25,5 +25,5 @@ public interface TasksService {
 
     void reviewTask(Long taskId, String comment, Long projectId, Long personId) throws NoPermissionException;
 
-    void changeStatus(Long taskId, Status status, Long projectId, Long personId);
+    void changeStatus(Long taskId, Status status, Long projectId, Long personId) throws NoPermissionException;
 }

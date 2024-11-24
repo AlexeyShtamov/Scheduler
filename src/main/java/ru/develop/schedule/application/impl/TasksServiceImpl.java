@@ -64,6 +64,7 @@ public class TasksServiceImpl implements TasksService {
     @Override
     public void createTask(Person currentPerson, Task task, Long projectId, Long personId) throws NoPermissionException {
         projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
+
         if (task != null) {
             task.setAuthor(currentPerson);
             task.setCreateDate(LocalDate.now());
@@ -108,14 +109,15 @@ public class TasksServiceImpl implements TasksService {
         projectPersonService.checkPermission(Set.of(Role.ROLE_TUTOR), projectId, personId);
         Task task = findTaskById(taskId);
         task.setReview(comment);
-        task.setStatus(Status.REVIEW);
         log.info("task {} reviewed", taskId);
 
     }
 
     @Transactional
     @Override
-    public void changeStatus(Long taskId, Status status, Long projectId, Long personId) {
+    public void changeStatus(Long taskId, Status status, Long projectId, Long personId) throws NoPermissionException {
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
+
         Task task = findTaskById(taskId);
         task.setStatus(status);
         log.info("Status is changed in task {}", taskId);

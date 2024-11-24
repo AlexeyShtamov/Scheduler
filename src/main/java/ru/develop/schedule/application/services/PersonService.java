@@ -19,8 +19,6 @@ public interface PersonService extends UserDetailsService {
 
     void changeRole(Long projectId, Long personId, String role) throws Exception;
 
-    void makeReview();
-
     Person findPersonById(Long id);
 
     Person createAdmin(Person person, String email);

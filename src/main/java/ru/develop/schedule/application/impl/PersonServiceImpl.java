@@ -133,10 +133,6 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         log.info("Person id {}: Person's role is changed on {} in project with id {}", personId, projectId, role);
     }
 
-    public void makeReview(){
-        //TODO
-    }
-
     @Override
     public Person findPersonById(Long id) {
         return personRepository.findById(id)
