@@ -14,6 +14,7 @@ import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;
 import ru.develop.schedule.domain.enums.Role;
+import ru.develop.schedule.extern.exceptions.IncorrectPasswordException;
 import ru.develop.schedule.extern.exceptions.PasswordMismatchException;
 import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
 import ru.develop.schedule.extern.repositories.PersonRepository;
@@ -80,7 +81,11 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Transactional
-    public Person updateContacts(Person person, Person updatePerson){
+    public Person updateContacts(Long id, Person updatePerson){
+
+        Person person = personRepository.findById(id)
+                .orElseThrow(() ->
+                        new NullPointerException("No person with id " + id));
 
         if (!updatePerson.getPhoneNumber().equals(person.getFirstName())){
             person.setPhoneNumber(updatePerson.getPhoneNumber());
@@ -98,12 +103,17 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Transactional
-    public Person updatePassword(Person person, String password){
+    public Person updatePassword(Long id, String password, String repeatPassword) throws IncorrectPasswordException {
 
-        if (StringUtil.isNullOrEmpty(password)) {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() ->
+                        new NullPointerException("No person with id " + id));
+
+        if (!StringUtil.isNullOrEmpty(password) && password.equals(repeatPassword)) {
             person.setPassword(passwordEncoder.encode(password));
             person = personRepository.save(person);
         }
+        else throw new IncorrectPasswordException("Your password is null or not match");
         log.info("{} {}: Person's password is updated", person.getFirstName(), person.getLastName());
         return person;
     }
@@ -149,5 +159,12 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     @Override
     public Person createAdmin(Person person, String email) {
         return null;
+    }
+
+    @Override
+    public Person findByEmail(String email) {
+        Person person = personRepository.findByEmail(email).orElseThrow(() -> new NullPointerException("No person with email " + email));
+        log.info("Person with email {} is found", email);
+        return person;
     }
 }
