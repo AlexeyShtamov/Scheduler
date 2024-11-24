@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.develop.schedule.application.services.PersonService;
 import ru.develop.schedule.application.services.SprintService;
 import ru.develop.schedule.domain.Task;
-import ru.develop.schedule.extern.dto.PersonDto;
+import ru.develop.schedule.extern.dto.TaskPersonDto;
 import ru.develop.schedule.extern.dto.TaskDTO;
 
 @Component
@@ -24,8 +24,8 @@ public class TaskMapper {
                 task.getPriority(),
                 task.getAssignDate(),
                 task.getDeadline(),
-                new PersonDto(task.getWorker().getId(), task.getWorker().getFirstName(), task.getWorker().getLastName()),
-                new PersonDto(task.getAuthor().getId(), task.getAuthor().getFirstName(), task.getAuthor().getLastName()),
+                new TaskPersonDto(task.getWorker().getId(), task.getWorker().getFirstName(), task.getWorker().getLastName()),
+                new TaskPersonDto(task.getAuthor().getId(), task.getAuthor().getFirstName(), task.getAuthor().getLastName()),
                 task.getTtz(),
                 sprintMapper.getSprintDTOFromSprint(task.getSprint()),
                 task.getStatus(),

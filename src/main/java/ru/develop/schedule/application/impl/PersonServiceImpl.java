@@ -52,7 +52,11 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Transactional
-    public Person updateProfile(Person person, Person updatePerson){
+    public Person updateProfile(Long id, Person updatePerson){
+
+        Person person = personRepository.findById(id)
+                .orElseThrow(() ->
+                        new NullPointerException("No person with id " + id));
 
         if (updatePerson.getFirstName() != null && !updatePerson.getFirstName().equals(person.getFirstName())){
             person.setFirstName(updatePerson.getFirstName());
@@ -140,5 +144,10 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         }
         log.warn("Person with email {} is not founded", email);
         throw new UsernameNotFoundException(email + " not found");
+    }
+
+    @Override
+    public Person createAdmin(Person person, String email) {
+        return null;
     }
 }

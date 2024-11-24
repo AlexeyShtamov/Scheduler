@@ -7,6 +7,6 @@ import java.time.LocalDate;
 
 public record TaskDTO(Long id, String title, String description, Priority priority, LocalDate startDate,
                       LocalDate endDate,
-                      PersonDto assignee, PersonDto author, double ttz, SprintDTO sprint, Status status, String review) {
+                      TaskPersonDto assignee, TaskPersonDto author, double ttz, SprintDTO sprint, Status status, String review) {
 }
 

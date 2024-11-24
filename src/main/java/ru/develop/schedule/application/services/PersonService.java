@@ -8,11 +8,11 @@ import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
 public interface PersonService extends UserDetailsService {
     Person save(Person person, String repeatPassword) throws PersonIsAlreadyExist, PasswordMismatchException;
 
-    Person updateProfile(Person optionalPerson, Person updatePerson);
+    Person updateProfile(Long id, Person updatePerson);
 
-    Person updateContacts(Person person, Person updatePerson);
+    Person updateContacts(Long id, Person updatePerson);
 
-    Person updatePassword(Person person, String password);
+    Person updatePassword(Long id, String password);
 
     void delete(Person person);
 
@@ -21,4 +21,6 @@ public interface PersonService extends UserDetailsService {
     void makeReview();
 
     Person findPersonById(Long id);
+
+    Person createAdmin(Person person, String email);
 }
