@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from '../assets/logo.svg';
 import { TextField, Typography, Button} from "@mui/material";
 import './css/LoginPage.css';
@@ -10,23 +10,31 @@ import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleSubmit = (evt: React.FormEvent) => {
+    evt.preventDefault();
+    console.log({email, password})
+    navigate("/task");
+  };
 
    return (
     <div className="App">
       <header className="header">
         <nav>
-          <div className="logo">
+          <div className="logo" onClick={() => navigate('/')}>
             <img src={logo} alt="BrainStorm Logo" className="logo-image"></img>
             BrainStorm
           </div>
           </nav>
           </header>
-          <form className="auth-form">
+          <form className="auth-form" onSubmit={handleSubmit}>
           <Typography className="enter-text" variant="h1" component="h2">Вход</Typography>
-          <TextField className="form-item" type="email" id="Email" label="Почта" variant="outlined" />
-          <TextField className="form-item" id="Password" label="Пароль"  type="password" variant="outlined" />
+          <TextField className="form-item" type="email" id="Email" label="Почта" variant="outlined"  onChange={(e) => setEmail(e.target.value)}/>
+          <TextField className="form-item" id="Password" label="Пароль"  type="password" variant="outlined" onChange={(e) => setPassword(e.target.value)} />
           <div className="form-footer">
-          <Button  className="form-button" variant="contained">Войти</Button>
+          <Button  className="form-button" type="submit" variant="contained">Войти</Button>
           <span className="form-span" onClick={() => navigate('/register')}>Нет аккаунта?</span>
           </div>
           </form>

@@ -36,3 +36,73 @@
     margin-right: 19px;
 }
 
+.header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Элементы выравниваются в начале */
+    gap: 20px; /* Общий отступ между группами */
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 70px;
+    cursor: pointer; 
+  }
+  
+  .header-fields {
+    display: flex;
+    align-items: center;
+    gap: 28px; 
+    flex-grow: 1;
+  }
+
+  .add-icon {
+    background-color: #f9f9f9 !important;
+    color: #7f7f7f !important;
+  }
+  
+  .header-avatar {
+    margin-left: auto;
+    margin-right: 120px; 
+  }
+  
+  .avatar-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+.header-line{
+    margin-top: 26px;
+}
+
+.custom-autocomplete .MuiOutlinedInput-root {
+    background-color: #f0f0f0;
+    font-family:Georgia, 'Roboto', serif;
+    font-weight: 400;
+    font-size: 20;
+    line-height: 23.44px;
+  }
+
+.form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+  
+.form-grid .MuiTextField-root, 
+.form-grid .MuiAutocomplete-root  {
+    flex: 1 1 calc(50% - 16px);
+    min-width: 200px; 
+}
+
+.close-button{
+  display: flex;
+  justify-content: space-between;
+}
+
+.file-list li {
+  display: flex;
+  align-items: center;
+}

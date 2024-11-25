@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from '../assets/logo.svg';
 import { TextField, Typography, Button} from "@mui/material";
 import './css/LoginPage.css';
@@ -9,52 +9,123 @@ import { useNavigate } from "react-router-dom";
 
 
 const RegisterPage: React.FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    surname: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-   return (
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(formData);
+  };
+
+  return (
     <div className="App">
       <header className="header">
         <nav>
-          <div className="logo">
-            <img src={logo} alt="BrainStorm Logo" className="logo-image"></img>
+          <div className="logo" onClick={() => navigate('/')}>
+            <img src={logo} alt="BrainStorm Logo" className="logo-image" />
             BrainStorm
           </div>
-          </nav>
-          </header>
-          <div className="auth-form">
-          <Typography className="enter-text" variant="h1" component="h2">Регистрация</Typography>
-          <TextField className="form-item" type="text" id="name" label="Имя" variant="outlined" />
-          <TextField className="form-item" type="text" id="surname" label="Фамилия" variant="outlined" />
-          <TextField className="form-item" type="tel" id="tel" label="Номер телефона" variant="outlined" />
-          <TextField className="form-item" type="email" id="Email" label="Почта" variant="outlined" />
-          <TextField className="form-item" id="Password" label="Пароль"  type="password" variant="outlined" />
-          <TextField className="form-item" id="Password" label="Повторный пароль"  type="password" variant="outlined" />
-          <div className="form-footer">
-          <Button  className="form-button" variant="contained">Зарегистрироваться</Button>
-          <span className="form-span" onClick={() => navigate('/login')}>Есть аккаунт?</span>
-          </div>
-          </div>
-          <footer className='main-footer'>
-      <div className="logo">
-            <img src={logo} alt="BrainStorm Logo" className="logo-image"></img>
-            BrainStorm
-          </div>
-        <p className='footer-text'>Политика конфиденциальности</p>
-        <p className='footer-text'>Соглашение на обработку персональных данных</p>
+        </nav>
+      </header>
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <Typography className="enter-text" variant="h1" component="h2">
+          Регистрация
+        </Typography>
+        <TextField
+          className="form-item"
+          type="text"
+          id="name"
+          label="Имя"
+          variant="outlined"
+          value={formData.name}
+          onChange={handleChange}
+        />
+        <TextField
+          className="form-item"
+          type="text"
+          id="surname"
+          label="Фамилия"
+          variant="outlined"
+          value={formData.surname}
+          onChange={handleChange}
+        />
+        <TextField
+          className="form-item"
+          type="tel"
+          id="phone"
+          label="Номер телефона"
+          variant="outlined"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+        <TextField
+          className="form-item"
+          type="email"
+          id="email"
+          label="Почта"
+          variant="outlined"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        <TextField
+          className="form-item"
+          id="password"
+          label="Пароль"
+          type="password"
+          variant="outlined"
+          value={formData.password}
+          onChange={handleChange}
+        />
+        <TextField
+          className="form-item"
+          id="confirmPassword"
+          label="Повторный пароль"
+          type="password"
+          variant="outlined"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+        />
+        <div className="form-footer">
+          <Button className="form-button" variant="contained" type="submit">
+            Зарегистрироваться
+          </Button>
+          <span className="form-span" onClick={() => navigate('/login')}>
+            Есть аккаунт?
+          </span>
+        </div>
+      </form>
+      <footer className="main-footer">
+        <div className="logo">
+          <img src={logo} alt="BrainStorm Logo" className="logo-image" />
+          BrainStorm
+        </div>
+        <p className="footer-text">Политика конфиденциальности</p>
+        <p className="footer-text">Соглашение на обработку персональных данных</p>
         <div className="social-icons">
-    <a href="#">
-      <img src={youtubeIcon} alt="Facebook" className="social-icon" />
-    </a>
-    <a href="#">
-      <img src={faceBookIcon} alt="Instagram" className="social-icon" />
-    </a>
-    <a href="#">
-      <img src={twitterIcon} alt="Instagram" className="social-icon" />
-    </a>
+          <a href="#">
+            <img src={youtubeIcon} alt="YouTube" className="social-icon" />
+          </a>
+          <a href="#">
+            <img src={faceBookIcon} alt="Facebook" className="social-icon" />
+          </a>
+          <a href="#">
+            <img src={twitterIcon} alt="Twitter" className="social-icon" />
+          </a>
         </div>
       </footer>
     </div>
-);
+  );
 };
 
 export { RegisterPage };

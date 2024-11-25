@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import TaskBoard from './components/TaskBoard';
+import { TaskPage } from './components/TaskPage';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/registerPage';
 import './App.css';
@@ -74,6 +75,7 @@ const App: React.FC = () => {
         <Route path="/" element={<MainContent />} /> 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage/>}/>
+        <Route path="/task" element={<TaskPage/>}/>
       </Routes>
     </Router>
   );
