@@ -17,7 +17,6 @@ import closer from '../assets/closer.png';
 import '../components/css/LoginPage.css';
 
 const priorityOptions = [
-  { label: 'ВСЕ ПРИОРИТЕТЫ' },
   { label: 'НИЗКИЙ' },
   { label: 'СРЕДНИЙ' },
   { label: 'ВЫСОКИЙ' },
@@ -39,7 +38,7 @@ const users = [
 ];
 
 const TaskPage: React.FC = () => {
-  const [selectedPriority, setSelectedPriority] = useState<string>('ВСЕ ПРИОРИТЕТЫ');
+  const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedBoard, setSelectedBoard] = useState<string>('МОЯ');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedExecutor, setSelectedExecutor] = useState<string | null>(null);
@@ -55,7 +54,7 @@ const TaskPage: React.FC = () => {
     if (selectedFiles) {
       setFiles(prevFiles => [
         ...prevFiles,
-        ...Array.from(selectedFiles), // Добавляем новые файлы в массив
+        ...Array.from(selectedFiles),
       ]);
     }
 
@@ -109,7 +108,7 @@ const TaskPage: React.FC = () => {
                 type="file"
                 id="file-upload"
                 style={{ display: 'none' }}
-                multiple // Разрешает выбор нескольких файлов
+                multiple 
                 onChange={handleFileChange}
                 ref={fileInputRef}
               />
@@ -117,7 +116,7 @@ const TaskPage: React.FC = () => {
                 <Button
                   variant="text"
                   sx={{ color: '#00000080' }}
-                  onClick={() => document.getElementById('file-upload')?.click()} // Имитируем клик по скрытому input
+                  onClick={() => document.getElementById('file-upload')?.click()}
                 >
                   Добавить файлы
                 </Button>
@@ -135,7 +134,7 @@ const TaskPage: React.FC = () => {
                             style={{ cursor: 'pointer', width:'16px', height:'16px', alignItems: 'center', display:'flex' }}
                             onClick={() => handleRemoveFile(file)} // Удаляем файл при клике на крестик
                           />
-                        </li> // Добавляем ссылку для скачивания файла
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -161,13 +160,13 @@ const TaskPage: React.FC = () => {
                 <TextField fullWidth label="Дата выполнения" type="date" InputLabelProps={{ shrink: true }} />
                 <TextField fullWidth label="Трудозатраты" variant="outlined" />
                 <Autocomplete
-                  options={users} // Используем массив пользователей
+                  options={users}
                   value={selectedExecutor ? { label: selectedExecutor } : null}
                   onChange={(_, newValue) => setSelectedExecutor(newValue?.label || '')}
                   renderInput={(params) => <TextField {...params} label="Исполнитель" />}
                 />
                 <Autocomplete
-                  options={users} // Используем массив пользователей
+                  options={users} 
                   value={selectedAuthor ? { label: selectedAuthor } : null}
                   onChange={(_, newValue) => setSelectedAuthor(newValue?.label || '')}
                   renderInput={(params) => <TextField {...params} label="Автор задачи" />}
