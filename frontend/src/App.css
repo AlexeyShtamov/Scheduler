@@ -110,6 +110,7 @@ main {
   justify-content: space-between;
   margin-left: 3rem;
   margin-right: 3rem;
+  gap: 30px;
 }
 
 .task-columns h3{
@@ -202,6 +203,7 @@ main {
   position: relative;
   margin-bottom: 5px;
   color:#00000080;
+  font-family: 'Roboto', serif;
 }
 
 .task-title::after {

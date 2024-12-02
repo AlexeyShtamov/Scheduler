@@ -1,6 +1,5 @@
 import {
-  Autocomplete,
-  Button,
+  Autocomplete,Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,38 +14,38 @@ import logo from '../assets/logo.svg';
 import avatar from '../assets/avatar2.svg';
 import closer from '../assets/closer.png';
 import '../components/css/LoginPage.css';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs/AdapterDayjs';
+import dayjs from 'dayjs';
+import AuthTaskBoard from './AuthTaskBoard';
+import { users, sprintOptions, boardOptions, priorityOptions, mainPagePriorityOptions } from '../const';
 
-const priorityOptions = [
-  { label: 'НИЗКИЙ' },
-  { label: 'СРЕДНИЙ' },
-  { label: 'ВЫСОКИЙ' },
-];
 
-const boardOptions = [
-  { label: 'МОЯ' },
-  { label: 'КОМАНДА 1' },
-  { label: 'КОМАНДА 2' },
-];
 
-const users = [
-  { label: 'Иван Иванов' },
-  { label: 'Петр Петров' },
-  { label: 'Алексей Александров' },
-  { label: 'Мария Морозова' },
-  { label: 'Елена Смирнова' },
-  { label: 'Дмитрий Дмитриев' },
-];
 
 const TaskPage: React.FC = () => {
-  const [selectedPriority, setSelectedPriority] = useState<string>('');
+  const [mainPagePriority, setMainPagePriority] = useState<string>('ВСЕ ПРИОРИТЕТЫ'); // Для главной страницы
+  const [dialogPriority, setDialogPriority] = useState<string>(''); // Для Dialog
   const [selectedBoard, setSelectedBoard] = useState<string>('МОЯ');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedExecutor, setSelectedExecutor] = useState<string | null>(null);
   const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [appointmentDate, setAppointmentDate] = useState<dayjs.Dayjs | null>(null);
+  const [completionDate, setCompletionDate] = useState<dayjs.Dayjs | null>(null);
 
   const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
+  const handleCloseDialog = () => {
+    setDialogPriority('');
+    setSelectedBoard('МОЯ');
+    setSelectedExecutor(null);
+    setSelectedAuthor(null);
+    setFiles([]);
+    setAppointmentDate(null);
+    setCompletionDate(null);
+    setOpenDialog(false);
+  }
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,14 +149,19 @@ const TaskPage: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontFamily:'Roboto' }}>
               <Autocomplete
                 options={priorityOptions}
-                value={{ label: selectedPriority }}
-                onChange={(_, value) => setSelectedPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
+                value={{ label: dialogPriority }}
+                onChange={(_, value) => setDialogPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
                 renderInput={(params) => <TextField {...params} label="Приоритет" />}
               />
               <div className="form-grid">
-                <TextField fullWidth label="Дата назначения" type="date" InputLabelProps={{ shrink: true }} />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker label="Дата назначения"
+                 value={appointmentDate}
+                 onChange={(newDate: dayjs.Dayjs | null) => setAppointmentDate(newDate)}/>
                 <TextField fullWidth label="Спринт" variant="outlined" />
-                <TextField fullWidth label="Дата выполнения" type="date" InputLabelProps={{ shrink: true }} />
+                <DatePicker label="Дата выполнения"
+                value={completionDate}
+                onChange={(newDate: dayjs.Dayjs | null) => setCompletionDate(newDate)}/>
                 <TextField fullWidth label="Трудозатраты" variant="outlined" />
                 <Autocomplete
                   options={users}
@@ -171,6 +175,7 @@ const TaskPage: React.FC = () => {
                   onChange={(_, newValue) => setSelectedAuthor(newValue?.label || '')}
                   renderInput={(params) => <TextField {...params} label="Автор задачи" />}
                 />
+                </LocalizationProvider>
               </div>
             </div>
           </div>
@@ -199,11 +204,11 @@ const TaskPage: React.FC = () => {
             />
             <Autocomplete
               disablePortal
-              options={priorityOptions}
+              options={mainPagePriorityOptions}
               className="custom-autocomplete"
               sx={{ width: 300 }}
-              value={{ label: selectedPriority }}
-              onChange={(_, value) => setSelectedPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
+              value={{ label: mainPagePriority }}
+              onChange={(_, value) => setMainPagePriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
               renderInput={(params) => <TextField {...params} label="Приоритет" />}
             />
             <Fab color="primary" aria-label="add" className="add-icon" onClick={handleOpenDialog}>
@@ -219,6 +224,17 @@ const TaskPage: React.FC = () => {
       </header>
       <div className="header-line"></div>
       {renderDialog()}
+      <p className='header-card'> 
+        Моя команда
+        <Autocomplete
+          disablePortal
+          options={sprintOptions}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="Спринт" />}
+          />
+        </p>
+        <div className="header-card-line"></div>
+        <AuthTaskBoard/>
     </div>
   );
 };

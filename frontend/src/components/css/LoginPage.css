@@ -106,3 +106,37 @@
   display: flex;
   align-items: center;
 }
+
+.header-card{
+  display: flex;
+  gap: 70px;
+  font-size: 35px;
+  font-family: 'Roboto', serif;
+  line-height: 41px;
+  align-items: center;
+  margin-left: 50px;
+}
+
+.header-card-line{
+  margin-top: 24px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.task-board.task-board-auth {
+  padding-bottom: 3%;
+}
+
+.user-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 81px;
+}
+
+.task-columns-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 0 80px;
+}
