@@ -39,6 +39,12 @@ nav{
   margin-right: 6px; 
 }
 
+.avatar-icon{
+  rotate: 0.83 deg;
+  width: 24.35px;
+  height: 27.6;
+}
+
 .logo {
   display: flex;
   align-items: center;

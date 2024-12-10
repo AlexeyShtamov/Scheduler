@@ -124,7 +124,7 @@
 }
 
 .task-board.task-board-auth {
-  padding-bottom: 3%;
+  padding-bottom: 5%;
 }
 
 .user-section h2 {
@@ -137,6 +137,20 @@
 .task-columns-header{
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin: 0 80px;
+  margin-left: 80px;
+  margin-right: 130px;
+}
+
+.arrow-icon.rotated {
+  transform: rotate(180deg); /* Переворот стрелки */
+}
+
+.task-columns{
+  padding-bottom: 5%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-column1, .header-column2, .header-column3, .header-column4{
+  text-align: left;
 }
