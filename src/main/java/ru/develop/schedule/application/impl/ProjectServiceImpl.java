@@ -69,16 +69,4 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
         log.info("Project with id = {} update", projectId);
     }
-
-    @Transactional
-    @Override
-    public void addPersonForProject(Long projectId, Long personId, Person person) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR), projectId, personId);
-
-        Project project = findProjectById(projectId);
-        project.setPeople(person);
-        log.info("Project with id = {} added person", projectId);
-
-        projectRepository.save(project);
-    }
 }

@@ -54,17 +54,9 @@ public class ProjectController {
 
     @SneakyThrows
     @PutMapping("/{projectId}/people")
-    public ResponseEntity<Void> addPersonForProject(@PathVariable Long projectId, @RequestBody Long userID, @RequestBody String emails) {
+    public ResponseEntity<Void> addPersonForProject(@PathVariable Long projectId, @RequestBody Long userID, @RequestBody String emails, @RequestParam String role) {
         Person person = personService.findByEmail(emails);
-        projectService.addPersonForProject(projectId, userID, person);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{projectId}")
-    public ResponseEntity<Void> addSpecialPersonForProject(@PathVariable Long projectId, @RequestBody Long userID,
-                                                           @RequestBody String role) {
-        projectPersonService.addSpecialPerson(projectId, userID, role);
+        projectPersonService.addSpecialPerson(userID, projectId, person, role);
 
         return ResponseEntity.noContent().build();
     }

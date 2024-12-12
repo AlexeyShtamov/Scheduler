@@ -15,6 +15,4 @@ public interface ProjectService {
     void deleteProject(Long projectId);
 
     void updateProject(Long projectId, Long personId, String boardName) throws NoPermissionException;
-
-    void addPersonForProject(Long projectId, Long personId, Person person) throws NoPermissionException;
 }

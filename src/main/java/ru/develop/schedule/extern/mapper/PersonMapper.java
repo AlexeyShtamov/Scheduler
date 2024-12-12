@@ -3,6 +3,7 @@ package ru.develop.schedule.extern.mapper;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import ru.develop.schedule.domain.Person;
+import ru.develop.schedule.extern.dto.CreateAdminDTO;
 import ru.develop.schedule.extern.dto.CreatePersonDTO;
 import ru.develop.schedule.extern.dto.InfoPersonDTO;
 
@@ -48,5 +49,15 @@ public class PersonMapper {
                 person.getTelegram(),
                 person.getVk()
         );
+    }
+
+    public Person fromCreateAdminDTOToPerson(CreateAdminDTO createAdminDTO){
+        Person person = new Person();
+        person.setFirstName(createAdminDTO.firstName());
+        person.setLastName(createAdminDTO.lastName());
+        person.setEmail(createAdminDTO.emailSend());
+        person.setPassword(createAdminDTO.password());
+
+        return person;
     }
 }

@@ -41,14 +41,23 @@ public class ProjectPersonServiceImpl implements ProjectPersonService {
     }
 
     @Override
-    public void addSpecialPerson(Long projectId, Long personId, String strRole) {
-        ProjectPersonId id = new ProjectPersonId(projectId, personId);
+    public void addSpecialPerson(Long userId, Long projectId, Person person, String strRole) {
+        Person mainPerson= personService.findPersonById(userId);
+
+        if (!mainPerson.getRole().equals(Role.ROLE_ADMIN)){
+            ProjectPerson projectPerson = projectPersonRepository.findById(new ProjectPersonId(projectId, userId)).orElseThrow(() -> new NullPointerException("You have no permission for adding"));
+            if (!projectPerson.getRole().equals(Role.ROLE_SUPERVISOR)) throw new NullPointerException("You have no permission for adding");
+        }
+
+
+        ProjectPersonId id = new ProjectPersonId(projectId, person.getId());
         Project project = projectService.findProjectById(projectId);
-        Person person = personService.findPersonById(personId);
 
         Role role = null;
         if (!StringUtil.isNullOrEmpty(strRole) &&
-                (Role.valueOf(strRole).equals(Role.ROLE_SUPERVISOR) || Role.valueOf(strRole).equals(Role.ROLE_TUTOR))){
+                (Role.valueOf(strRole).equals(Role.ROLE_SUPERVISOR)
+                        || Role.valueOf(strRole).equals(Role.ROLE_TUTOR))
+        || Role.valueOf(strRole).equals(Role.ROLE_STUDENT)){
             role = Role.valueOf(strRole);
         }
 

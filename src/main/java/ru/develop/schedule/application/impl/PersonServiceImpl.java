@@ -3,7 +3,13 @@ package ru.develop.schedule.application.impl;
 import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,11 +20,14 @@ import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;
 import ru.develop.schedule.domain.enums.Role;
+import ru.develop.schedule.extern.dto.JwtRequest;
+import ru.develop.schedule.extern.dto.JwtResponse;
 import ru.develop.schedule.extern.exceptions.IncorrectPasswordException;
 import ru.develop.schedule.extern.exceptions.PasswordMismatchException;
 import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
 import ru.develop.schedule.extern.repositories.PersonRepository;
 import ru.develop.schedule.extern.repositories.ProjectPersonRepository;
+import ru.develop.schedule.extern.utils.JwtTokenUtils;
 
 import java.util.Optional;
 
@@ -29,11 +38,20 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProjectPersonRepository projectPersonRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtils jwtTokenUtils;
+    private final JavaMailSender javaMailSender;
 
-    public PersonServiceImpl(PersonRepository personRepository, @Lazy PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository) {
+    @Value("${spring.mail.sender.email}")
+    private String senderMail;
+
+    public PersonServiceImpl(PersonRepository personRepository, @Lazy PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository, @Lazy AuthenticationManager authenticationManager, JwtTokenUtils jwtTokenUtils, JavaMailSender javaMailSender) {
         this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
         this.projectPersonRepository = projectPersonRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtils = jwtTokenUtils;
+        this.javaMailSender = javaMailSender;
     }
 
     @Transactional
@@ -153,14 +171,47 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Override
-    public Person createAdmin(Person person, String email) {
-        return null;
+    public Person createAdmin(Person person, String email) throws PersonIsAlreadyExist {
+
+        if (personRepository.findByEmail(person.getEmail()).isPresent()) {
+            throw new PersonIsAlreadyExist("Person with email " + person.getEmail() + " is already exist");
+        }
+
+        person.setPassword(passwordEncoder.encode(person.getPassword()));
+        Person createdPerson = personRepository.save(person);
+        sendMail(person.getEmail(), person.getPassword());
+        return createdPerson;
     }
+
+
 
     @Override
     public Person findByEmail(String email) {
         Person person = personRepository.findByEmail(email).orElseThrow(() -> new NullPointerException("No person with email " + email));
         log.info("Person with email {} is found", email);
         return person;
+    }
+
+    @Override
+    public JwtResponse createAuthToken(JwtRequest authRequest) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password()));
+        }catch (BadCredentialsException e){
+            throw new BadCredentialsException("Неправильный логин или пароль");
+        }
+        UserDetails userDetails = loadUserByUsername(authRequest.email());
+        String token = jwtTokenUtils.generateToken(userDetails);
+
+        return new JwtResponse(token);
+    }
+
+    private void sendMail(String email, String password) {
+        SimpleMailMessage smm = new SimpleMailMessage();
+
+        smm.setFrom(senderMail);
+        smm.setTo(email);
+        smm.setSubject("Вы новый админ сервиса Scheduler!");
+        smm.setText("Логин: " + email + ". Пароль: " + password);
+        javaMailSender.send(smm);
     }
 }
