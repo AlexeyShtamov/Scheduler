@@ -3,8 +3,6 @@ package ru.develop.schedule.extern.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.develop.schedule.application.services.PersonService;
 import ru.develop.schedule.domain.Person;
@@ -47,5 +45,12 @@ public class PersonController {
     public ResponseEntity<InfoPersonDTO> updatePassword(@RequestBody UpdatePasswordDTO updatePasswordDTO, @PathVariable Long id) throws IncorrectPasswordException {
         Person updatedPerson = personService.updatePassword(id, updatePasswordDTO.password(), updatePasswordDTO.repeatPassword());
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InfoPersonDTO> deletePerson(@PathVariable Long id) {
+        Person person = personService.findPersonById(id);
+
+        return ResponseEntity.ok(personMapper.fromPersonToDTO(person));
     }
 }
