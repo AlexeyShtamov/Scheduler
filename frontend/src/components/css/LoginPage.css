@@ -1,0 +1,156 @@
+
+.auth-form{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    width: 353px;
+    margin: 0 auto;
+    margin-top: 159px;
+    margin-bottom: 247px;
+    gap: 29px;
+  }
+
+.auth-form .enter-text {
+    margin-bottom: 65px;
+    color: #FF8513;
+    font-family: 'Roboto', serif;
+    font-weight: 500;
+    font-size: 65px;
+    line-height: 45px;
+}
+
+.auth-form .form-button{
+    margin-right: 17px;
+    background-color: #FF8513;
+    border-radius: 25px;
+    padding: 10px 50px;
+    margin-bottom: 20px;
+}
+
+.auth-form .form-span{
+    color: #FF8513;
+    cursor: pointer;
+}
+
+.social-icon{
+    margin-right: 19px;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Элементы выравниваются в начале */
+    gap: 20px; /* Общий отступ между группами */
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 70px;
+    cursor: pointer; 
+  }
+  
+  .header-fields {
+    display: flex;
+    align-items: center;
+    gap: 28px; 
+    flex-grow: 1;
+  }
+
+  .add-icon {
+    background-color: #f9f9f9 !important;
+    color: #7f7f7f !important;
+  }
+  
+  .header-avatar {
+    margin-left: auto;
+    margin-right: 120px; 
+  }
+  
+  .avatar-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+.header-line{
+    margin-top: 26px;
+}
+
+.custom-autocomplete .MuiOutlinedInput-root {
+    background-color: #f0f0f0;
+    font-family:Georgia, 'Roboto', serif;
+    font-weight: 400;
+    font-size: 20;
+    line-height: 23.44px;
+  }
+
+.form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+  
+.form-grid .MuiTextField-root, 
+.form-grid .MuiAutocomplete-root  {
+    flex: 1 1 calc(50% - 16px);
+    min-width: 200px; 
+}
+
+.close-button{
+  display: flex;
+  justify-content: space-between;
+}
+
+.file-list li {
+  display: flex;
+  align-items: center;
+}
+
+.header-card{
+  display: flex;
+  gap: 70px;
+  font-size: 35px;
+  font-family: 'Roboto', serif;
+  line-height: 41px;
+  align-items: center;
+  margin-left: 50px;
+}
+
+.header-card-line{
+  margin-top: 24px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.task-board.task-board-auth {
+  padding-bottom: 5%;
+}
+
+.user-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 81px;
+}
+
+.task-columns-header{
+  display: flex;
+  justify-content: space-between;
+  margin-left: 80px;
+  margin-right: 130px;
+}
+
+.arrow-icon.rotated {
+  transform: rotate(180deg); /* Переворот стрелки */
+}
+
+.task-columns{
+  padding-bottom: 5%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-column1, .header-column2, .header-column3, .header-column4{
+  text-align: left;
+}

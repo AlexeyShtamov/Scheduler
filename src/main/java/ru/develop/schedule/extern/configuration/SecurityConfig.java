@@ -51,7 +51,6 @@ public class SecurityConfig {
 
                         .requestMatchers("/h2-console/**").permitAll()
                 )
-
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

@@ -1,0 +1,248 @@
+html, body, #root{
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'Roboto', serif;
+  font-weight: 400;
+  font-size: 20px;
+  box-sizing: border-box;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
+}
+
+.header {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 62px;
+  background-color: #FFFFFF;
+}
+
+nav{
+  display:flex;
+  width: 100%;
+}
+
+.header-line {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+}
+
+.logo-image {
+  margin-right: 6px; 
+}
+
+.avatar-icon{
+  rotate: 0.83 deg;
+  width: 24.35px;
+  height: 27.6;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-family: 'Marcellus SC', serif;
+  font-size: 35px;
+  margin-left: 50px;
+}
+
+.auth {
+  display: flex;
+  align-items: center; 
+  margin-left: auto; 
+  margin-right: 50px;
+  margin-bottom: 21px;
+}
+
+.auth button {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Контентная часть растягивается, чтобы занять оставшееся пространство */
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero {
+  text-align: center;
+  margin-top: 2rem;
+  line-height: 58.59px;
+  font-size: 50px;
+  font-weight: 400;
+}
+
+.hero > * {
+  font-size: inherit; 
+  line-height: inherit;
+  font-weight: inherit;
+}
+
+.hero button {
+  background-color: #FF8513;
+  border: none;
+  margin-top: 15px;
+  margin-bottom: 139px;
+  padding: 1rem 2rem;
+  width: 315px;
+  height: 83px;
+  color: white;
+  font-size: 25px;
+  line-height: 29.3px;
+  border-radius: 5px;
+}
+
+
+.task-board {
+  margin: 2rem;
+  background: linear-gradient(178.38deg, rgba(226, 223, 223, 0.1) -36.15%, rgba(204, 204, 204, 0.1) 110.98%);
+  border: 1px solid #00000026;
+  padding-bottom:15%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25);
+  margin-bottom: 422px;
+}
+
+.task-columns {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 3rem;
+  margin-right: 3rem;
+  gap: 30px;
+}
+
+.task-columns h3{
+  font-size: 25px;
+  line-height: 29.3px;
+  margin-left: 26px;
+}
+
+
+.board-title-controls {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 33px;
+}
+
+.board-controls {
+  display: flex;
+  align-items: center; 
+}
+
+.board-controls button{
+  line-height: 23.44px;
+}
+
+.board-controls button:last-child {
+  margin-right: 97px;
+}
+
+.board-controls button:first-child{
+  opacity: 50%;
+}
+
+.board-title-controls select {
+  font-size: 20px;
+  line-height: 23.44px;
+}
+
+.board-title-controls h2{
+  margin-right: 34px;
+  margin-left: 97px;
+  font-size: 50px;
+  font-weight: 500;
+  line-height: 58.59px;
+}
+
+.board-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+  position: relative;
+}
+
+.board-button{
+  border: 1px solid #00000033;
+}
+
+.main-line {
+  width: 100%;
+  height: 1px; 
+  background-color: #00000080;
+  opacity: 50%;
+}
+
+.column {
+  width: 25%;
+}
+
+.task-card {
+  background-color: #f1f1f1;
+  padding: 1rem;
+  margin: 1rem 0;
+  border: 1px solid #00000033;
+  border-radius: 5px;
+}
+
+.task-card-header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.task-card-footer{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 54px;
+}
+
+.task-title {
+  display: inline-block;
+  position: relative;
+  margin-bottom: 5px;
+  color:#00000080;
+  font-family: 'Roboto', serif;
+}
+
+.task-title::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px; 
+  background-color: #00000033;
+  position: absolute;
+  bottom: -2px; 
+  left: 0;
+}
+
+.time-text{
+  color: #00000080;
+}
+
+.main-footer{
+  display: flex;                /* Включаем Flexbox для футера */
+  justify-content: space-between; /* Распределяем элементы футера по сторонам */
+  align-items: center;
+  padding-bottom: 60px;
+  padding-right: 170px;
+}
+
+
+.footer-text{
+  margin-right: 80px;
+  font-family: 'Montserrat', serif;
+  font-size: 18px;
+  line-height: 20px;
+  width: 297px;
+  color:#312426;
+}
+
+
