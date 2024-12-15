@@ -38,6 +38,8 @@ const TaskPage: React.FC = () => {
   const [taskTime, setTaskTime] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [usersState, setUsersState] = useState(users || []);
+  const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : null;
+  const formattedCompletionDate = completionDate ? completionDate.format('YYYY-MM-DD') : null;
 
   const handleCreateTask = () => {
     if (!selectedExecutor) {
@@ -65,8 +67,8 @@ const TaskPage: React.FC = () => {
       author: selectedAuthor,
       description: taskDescription,
       priority: dialogPriority,
-      appointmentDate: appointmentDate,
-      completionDate: completionDate
+      appointmentDate: formattedAppointmentDate,
+      completionDate: formattedCompletionDate
     };
 
     console.log('Новая задача:', newTask);
@@ -153,7 +155,7 @@ const TaskPage: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '85px', marginTop:'60px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <TextField fullWidth id="task-title" label="Наименование" variant="outlined" value={taskTitle} onChange={(evt)=>setTaskTitle(evt.target.value)}/>
-              <TextField fullWidth label="Описание" id="task-description" variant="outlined" multiline rows={6} 
+              <TextField fullWidth label="Описание" id="task-description" variant="outlined" multiline rows={6}
               value={taskDescription} onChange={(evt)=> setTaskDescription(evt.target.value)} />
               <div>
               <input
