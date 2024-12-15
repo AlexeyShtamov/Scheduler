@@ -1,6 +1,5 @@
 package ru.develop.schedule.extern.mapper;
 
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.extern.dto.CreatePersonDTO;
@@ -8,8 +7,13 @@ import ru.develop.schedule.extern.dto.InfoPersonDTO;
 
 @Component
 public class PersonMapper {
+    private final ProjectMapper projectMapper;
 
-    public Person fromCreateDTOToPerson(CreatePersonDTO createPersonDTO){
+    public PersonMapper(ProjectMapper projectMapper) {
+        this.projectMapper = projectMapper;
+    }
+
+    public Person fromCreateDTOToPerson(CreatePersonDTO createPersonDTO) {
         Person person = new Person();
 
         person.setFirstName(createPersonDTO.firstName());
@@ -20,7 +24,7 @@ public class PersonMapper {
         return person;
     }
 
-    public Person fromInfoDTOToPerson(InfoPersonDTO infoPersonDTO){
+    public Person fromInfoDTOToPerson(InfoPersonDTO infoPersonDTO) {
         Person person = new Person();
 
         person.setId(infoPersonDTO.id());
@@ -36,7 +40,7 @@ public class PersonMapper {
         return person;
     }
 
-    public InfoPersonDTO fromPersonToDTO(Person person){
+    public InfoPersonDTO fromPersonToDTO(Person person) {
         return new InfoPersonDTO(
                 person.getId(),
                 person.getFirstName(),
@@ -46,7 +50,8 @@ public class PersonMapper {
                 person.getDescription(),
                 person.getPhoneNumber(),
                 person.getTelegram(),
-                person.getVk()
+                person.getVk(),
+                person.getProject().stream().map(projectMapper::projectToDTO).toList()
         );
     }
 }

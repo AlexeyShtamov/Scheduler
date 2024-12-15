@@ -30,7 +30,9 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     private final PasswordEncoder passwordEncoder;
     private final ProjectPersonRepository projectPersonRepository;
 
-    public PersonServiceImpl(PersonRepository personRepository, @Lazy PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository) {
+    public PersonServiceImpl(PersonRepository personRepository,
+                             @Lazy PasswordEncoder passwordEncoder,
+                             ProjectPersonRepository projectPersonRepository) {
         this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
         this.projectPersonRepository = projectPersonRepository;

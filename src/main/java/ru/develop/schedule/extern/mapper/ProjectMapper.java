@@ -1,23 +1,27 @@
 package ru.develop.schedule.extern.mapper;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import ru.develop.schedule.application.services.ProjectService;
 import ru.develop.schedule.domain.Project;
 import ru.develop.schedule.extern.dto.ProjectDTO;
 
-@RequiredArgsConstructor
 @Component
 public class ProjectMapper {
-
-    private final ProjectService projectService;
     private final PersonMapper personMapper;
+    private final SprintMapper sprintMapper;
+
+    public ProjectMapper(@Lazy PersonMapper personMapper,
+                         SprintMapper sprintMapper) {
+        this.personMapper = personMapper;
+        this.sprintMapper = sprintMapper;
+    }
 
     public ProjectDTO projectToDTO(Project project) {
         return new ProjectDTO(
                 project.getId(),
                 project.getBoardName(),
-                project.getPeople().stream().map(personMapper::fromPersonToDTO).toList()
+                project.getPeople().stream().map(personMapper::fromPersonToDTO).toList(),
+                project.getSprint().stream().map(sprintMapper::getSprintDTOFromSprint).toList()
         );
     }
 

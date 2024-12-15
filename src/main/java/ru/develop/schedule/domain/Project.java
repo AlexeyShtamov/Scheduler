@@ -38,10 +38,6 @@ public class Project {
         this.people.add(people);
     }
 
-    public void setPeople(List<Person> people) {
-        this.people.addAll(people);
-    }
-
     public void setSprint(List<Sprint> sprint) {
         this.sprint.addAll(sprint);
     }
