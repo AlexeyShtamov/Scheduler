@@ -30,13 +30,13 @@ const mainPagePriorityOptions = [
       id: string
       title: string
       time: string
-      executor: string
+      executor: string | null
       author: string | null
       description: string
       priority: string
       appointmentDate: string | null
       completionDate: string | null
-
+      sprint: string | null
     };
     
     export type User = {
@@ -65,7 +65,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-15', 
               completionDate: '2024-12-16',
               description: 'Исправление ошибок в коде по отчету тестировщика.',
-              author: 'Иван Иванов' 
+              author: 'Иван Иванов',
+              sprint: sprintOptions[1].label
             },
             { 
               id: `task-${Math.floor(Math.random() * 1000000)}-${Date.now()}`, 
@@ -76,7 +77,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-14', 
               completionDate: '2024-12-14',
               description: 'Обновление документации проекта на основе новых требований.',
-              author: 'Иван Иванов' 
+              author: 'Иван Иванов',
+              sprint: sprintOptions[0].label 
             },
           ],
           inProgress: [
@@ -89,7 +91,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-14', 
               completionDate: '2024-12-14',
               description: 'Разработка функционала для нового модуля проекта.',
-              author: 'Иван Иванов' 
+              author: 'Иван Иванов',
+              sprint: sprintOptions[1].label 
             },
           ],
           review: [
@@ -102,7 +105,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-14', 
               completionDate: '2024-12-14',
               description: 'Ревью кода коллеги, исправление замечаний.',
-              author: 'Иван Иванов' 
+              author: 'Иван Иванов',
+              sprint: sprintOptions[0].label 
             },
           ],
           completed: [
@@ -115,7 +119,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-12', 
               completionDate: '2024-12-12',
               description: 'Деплой обновлений на сервер.',
-              author: 'Иван Иванов' 
+              author: 'Иван Иванов',
+              sprint: sprintOptions[0].label 
             },
           ],
         },
@@ -134,7 +139,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-13', 
               completionDate: '2024-12-13',
               description: 'Создание презентации для совещания с заказчиком.',
-              author: 'Петр Петров' 
+              author: 'Петр Петров',
+              sprint: sprintOptions[1].label 
             },
           ],
           inProgress: [
@@ -147,7 +153,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-14', 
               completionDate: '2024-12-14',
               description: 'Тестирование новой версии системы.',
-              author: 'Петр Петров' 
+              author: 'Петр Петров',
+              sprint: sprintOptions[1].label 
             },
           ],
           review: [],
@@ -161,7 +168,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-10', 
               completionDate: '2024-12-10',
               description: 'Настройка окружения для нового проекта.',
-              author: 'Петр Петров' 
+              author: 'Петр Петров',
+              sprint: sprintOptions[0].label 
             },
           ],
         },
@@ -180,7 +188,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-11', 
               completionDate: null,
               description: 'Обновление данных в базе для нового отчета.',
-              author: 'Мария Морозова' 
+              author: 'Мария Морозова',
+              sprint : sprintOptions[0].label 
             },
           ],
           inProgress: [],
@@ -194,7 +203,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-12', 
               completionDate: '2024-12-12',
               description: 'Проверка корректности данных для финансового отчета.',
-              author: 'Мария Морозова' 
+              author: 'Мария Морозова',
+              sprint: sprintOptions[1].label 
             },
           ],
           completed: [
@@ -207,7 +217,8 @@ const mainPagePriorityOptions = [
               appointmentDate: '2024-12-09', 
               completionDate: '2024-12-09',
               description: 'Подготовка отчета о проделанной работе за неделю.',
-              author: 'Мария Морозова' 
+              author: 'Мария Морозова',
+              sprint: sprintOptions[1].label 
             },
           ],
         },

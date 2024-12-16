@@ -154,3 +154,7 @@
 .header-column1, .header-column2, .header-column3, .header-column4{
   text-align: left;
 }
+
+.task-card{
+  cursor: pointer;
+}

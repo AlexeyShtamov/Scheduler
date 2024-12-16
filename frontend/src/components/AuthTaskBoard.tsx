@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import checkIcon from '../assets/check.svg'
 import arrow from '../assets/triangle.svg'
-import { User } from '../const';
+import { User, Task } from '../const';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import TaskDialog from './TaskDialog';
 
 
 type AuthTaskBoardProps = {
@@ -12,6 +13,29 @@ type AuthTaskBoardProps = {
 
 const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) => {
   const [visibleTasks, setVisibleTasks] = useState<boolean[]>(() => users.map(() => true));
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+
+  const handleTaskClick = (task : Task) =>{
+    setEditingTask(task)
+    setIsDialogOpen(true)
+  }
+
+  const handleSaveTask = (updatedTask: Task) => {
+    const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed']; // Задаем строгий тип для columnKeys
+
+    const updatedUsers = users.map((user) => {
+        const updatedTasks = { ...user.tasks };
+        columnKeys.forEach((column) => {
+            updatedTasks[column] = updatedTasks[column].map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+            );
+        });
+        return { ...user, tasks: updatedTasks };
+    });
+
+    setUsersState(updatedUsers); // Сохраняем обновленные данные в состоянии
+};
 
   const toggleTasksVisibility = (index: number) => {
     setVisibleTasks((prev) => {
@@ -90,6 +114,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
+                                onClick={() => handleTaskClick(task)}
                               >
                                 <div className="task-card-header">
                                   <span className="task-title">{task.title}</span>
@@ -112,6 +137,12 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
           </div>
         </div>
       ))}
+      <TaskDialog
+      open={isDialogOpen}
+      onClose={() => setIsDialogOpen(false)}
+      onCreateTask={handleSaveTask}
+      initialTask={editingTask} // Передаём задачу в диалог
+      />
     </div>
   );
 };
