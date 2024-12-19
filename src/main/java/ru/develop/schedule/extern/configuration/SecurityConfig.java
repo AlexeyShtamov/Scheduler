@@ -40,10 +40,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.applyPermitDefaultValues();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
+        config.setAllowedOrigins(Collections.singletonList("*"));
         config.setAllowedMethods(Collections.singletonList("*"));
-        config.addAllowedHeader("*");
-        config.addAllowedOrigin("*");
+        config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
         return source;
     }
