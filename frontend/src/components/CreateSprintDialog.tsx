@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 interface CreateSprintDialogProps {
     open: boolean;
     onClose: () => void;
-    onCreateSprint: (newSprintName: string) => void;
+    onCreateSprint: (newSprintName: string, appointmentDate: string, completionDate: string) => void;
 }
 
 const CreateSprintDialog: React.FC<CreateSprintDialogProps> = ({ open, onClose, onCreateSprint }) => {
@@ -16,8 +16,14 @@ const CreateSprintDialog: React.FC<CreateSprintDialogProps> = ({ open, onClose, 
     const [completionDate, setCompletionDate] = useState<dayjs.Dayjs | null>(null)
 
     const handleCreate = () => {
-        // Добавляем новый спринт через переданную функцию
-        onCreateSprint(newSprintName);
+        const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : '';
+        const formattedCompletionDate = completionDate ? completionDate.format('YYYY-MM-DD') : '';
+        console.log('Новый спринт создан:', {
+            newSprintName,
+            appointmentDate: formattedAppointmentDate,
+            completionDate: formattedCompletionDate
+        });
+        onCreateSprint(newSprintName, formattedAppointmentDate, formattedCompletionDate);
         onClose();
         setNewSprintName('');
         setAppointmentDate(null);
@@ -35,12 +41,11 @@ const CreateSprintDialog: React.FC<CreateSprintDialogProps> = ({ open, onClose, 
     return (
         <Dialog open={open} onClose={handleClose}>
             <DialogTitle>СОЗДАТЬ СПРИНТ</DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '16px', mt: 2}} >
                 <TextField
                     fullWidth
                     label="Название спринта"
                     value={newSprintName}
-                    sx={{ minWidth: '250px' }}
                     onChange={(e) => setNewSprintName(e.target.value)}
                 />
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -60,11 +65,9 @@ const CreateSprintDialog: React.FC<CreateSprintDialogProps> = ({ open, onClose, 
                     />
                 </LocalizationProvider>
             </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="primary">
-                    Отмена
-                </Button>
-                <Button onClick={handleCreate} color="primary">
+            <DialogActions sx={{ justifyContent: 'flex-start', px: 3 }}>
+                <Button onClick={handleCreate} 
+                sx={{ backgroundColor: '#FF8513', borderRadius: '555px', color: 'white'}}>
                     Создать
                 </Button>
             </DialogActions>

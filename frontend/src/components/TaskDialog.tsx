@@ -27,7 +27,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
     const [dialogPriority, setDialogPriority] = useState<string>(initialTask?.priority || '');
     const [selectedExecutor, setSelectedExecutor] = useState<string | null>(initialTask?.executor || null);
     const [selectedAuthor, setSelectedAuthor] = useState<string | null>(initialTask?.author || null);
-    const [files, setFiles] = useState<File[]>([]);
+    const [files, setFiles] = useState<File[]>(initialTask?.files || []);
     const [appointmentDate, setAppointmentDate] = useState<dayjs.Dayjs | null>(initialTask?.appointmentDate ? dayjs(initialTask.appointmentDate) : null);
     const [completionDate, setCompletionDate] = useState<dayjs.Dayjs | null>(initialTask?.completionDate ? dayjs(initialTask.completionDate) : null);
     const [taskTitle, setTaskTitle] = useState(initialTask?.title || '');
@@ -51,6 +51,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
             setTaskTime(initialTask.time || '');
             setTaskDescription(initialTask.description || '');
             setSprint(initialTask.sprint || '')
+            setFiles(initialTask.files || []);
         } else if(!open) {
             resetFields(); // Если initialTask отсутствует, сбрасываем поля
         }
@@ -68,6 +69,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
         setTaskTime('');
         setTaskDescription('');
         setSprint(null);
+        
     };
 
     const handleClose = () => {
@@ -105,6 +107,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
             appointmentDate: formattedAppointmentDate,
             completionDate: formattedCompletionDate,
             sprint: sprint,
+            files
         };
 
         onCreateTask(newTask);
@@ -236,10 +239,10 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <Autocomplete
                                 disablePortal
-                                options={sprintOptions}
+                                options={sprintOptions.map(option => option.title )}
                                 sx={{ width: 300 }}
-                                value={sprint ? sprintOptions.find(option => option.label === sprint) || null : null}
-                                onChange={(_, newValue) => setSprint(newValue?.label || null)}
+                                value={sprint || null}
+                                onChange={(_, newValue) => setSprint(newValue || null)}
                                 renderInput={(params) => <TextField {...params} label="Спринт" />}
                             />
                             <TextField

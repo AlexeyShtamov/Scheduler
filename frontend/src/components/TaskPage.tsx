@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Fab, Autocomplete, TextField } from '@mui/material';
+import { Fab, Autocomplete, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import logo from '../assets/logo.svg';
-import avatar from '../assets/avatar2.svg'
+import avatar from '../assets/avatar2.svg';
 import AuthTaskBoard from './AuthTaskBoard';
 import TaskDialog from './TaskDialog';
 import { boardOptions, mainPagePriorityOptions, sprintOptions, users, Task } from '../const';
@@ -16,6 +16,9 @@ const TaskPage: React.FC = () => {
   const [isCreateSprintDialogOpen, setCreateSprintDialogOpen] = useState(false);
   const [sprintOptionsState, setSprintOptionsState] = useState(sprintOptions);
   const [selectedSprint, setSelectedSprint] = useState<string>('');
+  const [boards, setBoards] = useState(boardOptions);
+  const [isCreateBoardDialogOpen, setCreateBoardDialogOpen] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -27,34 +30,36 @@ const TaskPage: React.FC = () => {
 
   const handleOpenCreateSprintDialog = () => {
     setCreateSprintDialogOpen(true);
-
   };
 
   const handleCloseCreateSprintDialog = () => {
     setCreateSprintDialogOpen(false);
   };
 
-  const handleCreateSprint = (newSprintName: string) => {
-    const newSprint = { label: newSprintName };
-    setSprintOptionsState((prevSprints) => [...prevSprints, newSprint]);
-    setSelectedSprint(newSprintName); // Добавляем новый спринт в список
+  const handleCreateBoard = () => {
+    if (newBoardName.trim()) {
+      const newBoard = { label: newBoardName, id: (boards.length + 1).toString() };
+      setBoards((prevBoards) => [...prevBoards, newBoard]);
+      setSelectedBoard(newBoardName);
+      setCreateBoardDialogOpen(false); 
+      setNewBoardName(''); 
+    }
   };
 
-  // Добавляем задачу в состояние пользователя
-  const handleCreateTask = (newTask: Task) => {
-    const assignedUserIndex = usersState.findIndex(
-      (user) => user.label === newTask.executor
-    );
+  const handleCreateSprint = (newSprintName: string, appointmentDate: string, completionDate: string) => {
+    const newSprint = { title: newSprintName, id: (sprintOptionsState.length + 1).toString(), appointmentDate, completionDate };
+    setSprintOptionsState((prevSprints) => [...prevSprints, newSprint]);
+    setSelectedSprint(newSprintName);
+  };
 
+  const handleCreateTask = (newTask: Task) => {
+    const assignedUserIndex = usersState.findIndex((user) => user.label === newTask.executor);
     if (assignedUserIndex >= 0) {
       setUsersState((prevUsers) => {
         const updatedUsers = [...prevUsers];
         updatedUsers[assignedUserIndex] = {
           ...updatedUsers[assignedUserIndex],
-          tasks: {
-            ...updatedUsers[assignedUserIndex].tasks,
-            assigned: [...updatedUsers[assignedUserIndex].tasks.assigned, newTask],
-          },
+          tasks: { ...updatedUsers[assignedUserIndex].tasks, assigned: [...updatedUsers[assignedUserIndex].tasks.assigned, newTask] },
         };
         return updatedUsers;
       });
@@ -72,11 +77,17 @@ const TaskPage: React.FC = () => {
           <div className="header-fields">
             <Autocomplete
               disablePortal
-              options={boardOptions}
+              options={[...boards, { label: 'Создать', id: '' }]}
               className="custom-autocomplete"
               sx={{ width: 300 }}
-              value={{ label: selectedBoard }}
-              onChange={(_, value) => setSelectedBoard(value?.label || 'МОЯ')}
+              value={{ label: selectedBoard, id: boards.length.toString() }}
+              onChange={(_, value) => {
+                if (value?.label === 'Создать') {
+                  setCreateBoardDialogOpen(true); // Открываем диалог создания новой доски
+                } else {
+                  setSelectedBoard(value?.label || 'МОЯ');
+                }
+              }}
               renderInput={(params) => <TextField {...params} label="Доска" />}
             />
             <Autocomplete
@@ -109,14 +120,14 @@ const TaskPage: React.FC = () => {
         Моя команда
         <Autocomplete
           disablePortal
-          options={[...sprintOptionsState, { label: 'Добавить новый спринт' }]}
+          options={[...sprintOptionsState.map((option) => option.title), 'Добавить новый спринт']}
           sx={{ width: 300 }}
-          value={{label: selectedSprint}}
+          value={selectedSprint}
           onChange={(_, value) => {
-            if (value?.label === 'Добавить новый спринт') {
-              handleOpenCreateSprintDialog(); // Открываем диалог создания нового спринта
-            }else{
-              setSelectedSprint(value?.label || '' )
+            if (value === 'Добавить новый спринт') {
+              handleOpenCreateSprintDialog();
+            } else {
+              setSelectedSprint(value || '');
             }
           }}
           renderInput={(params) => <TextField {...params} label="Спринт" />}
@@ -129,6 +140,25 @@ const TaskPage: React.FC = () => {
         onClose={handleCloseCreateSprintDialog}
         onCreateSprint={handleCreateSprint}
       />
+
+      {/* Диалог создания доски */}
+      <Dialog open={isCreateBoardDialogOpen} onClose={() => setCreateBoardDialogOpen(false)}>
+        <DialogTitle>Создать новую доску</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Название доски"
+            fullWidth
+            value={newBoardName}
+            onChange={(e) => setNewBoardName(e.target.value)}
+            autoFocus
+            sx={{minWidth: '300px'}}
+          />
+        </DialogContent>
+        <DialogActions sx={{display: 'flex', justifyContent: 'flex-start', px: 3 }}>
+          <Button onClick={handleCreateBoard} 
+          sx={{backgroundColor: '#FF8513', borderRadius: '555px', color: 'white'}}>Создать</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
