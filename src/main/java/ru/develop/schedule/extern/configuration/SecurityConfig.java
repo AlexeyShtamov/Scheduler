@@ -43,9 +43,11 @@ public class SecurityConfig {
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.addAllowedOriginPattern("*");
         config.setAllowedOrigins(Collections.singletonList("*"));
-        config.setAllowedMethods(Collections.singletonList("*"));
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
         return source;
     }
