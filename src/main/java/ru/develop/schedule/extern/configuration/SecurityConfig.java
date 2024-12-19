@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.develop.schedule.application.services.PersonService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -40,7 +41,9 @@ public class SecurityConfig {
         config.applyPermitDefaultValues();
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("*");
-        config.setAllowedMethods(List.of("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
+        config.addAllowedHeader("*");
+        config.addAllowedOrigin("*");
         source.registerCorsConfiguration("/**", config);
         return source;
     }
