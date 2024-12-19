@@ -115,6 +115,7 @@ const TaskPage: React.FC = () => {
         open={isDialogOpen}
         onClose={handleCloseDialog}
         onCreateTask={handleCreateTask}
+        onDeleteTask={() => {}}
       />
       <p className="header-card">
         Моя команда
@@ -134,7 +135,10 @@ const TaskPage: React.FC = () => {
         />
       </p>
       <div className="header-card-line"></div>
-      <AuthTaskBoard users={usersState} setUsersState={setUsersState} />
+      <AuthTaskBoard 
+      users={usersState} 
+      setUsersState={setUsersState}
+      filterPriority={mainPagePriority} />
       <CreateSprintDialog
         open={isCreateSprintDialogOpen}
         onClose={handleCloseCreateSprintDialog}
