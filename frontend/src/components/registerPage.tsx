@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import logo from '../assets/logo.svg';
-import { TextField, Typography, Button} from "@mui/material";
-import './css/LoginPage.css';
-import faceBookIcon from '../assets/facebook-icon.svg';
-import twitterIcon from '../assets/twitter-icon.svg';
-import youtubeIcon from '../assets/youtube-icon.svg';
+import { TextField, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import { registerUser } from "../services/api";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,9 +19,27 @@ const RegisterPage: React.FC = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+
+    // Подготовка данных для отправки
+    const userData = {
+      firstName: formData.name,
+      lastName: formData.surname,
+      phone: formData.phone,
+      email: formData.email,
+      password: formData.password,
+      repeatPassword: formData.confirmPassword,
+    };
+
+    try {
+      const response = await registerUser(userData);
+      console.log('Регистрация успешна:', response);
+      navigate('/login'); // Перенаправление на страницу логина
+    } catch (error) {
+      console.error('Ошибка при регистрации:', error);
+      alert(`Ошибка: ${error}`);
+    }
   };
 
   return (
@@ -105,25 +119,6 @@ const RegisterPage: React.FC = () => {
           </span>
         </div>
       </form>
-      <footer className="main-footer">
-        <div className="logo">
-          <img src={logo} alt="BrainStorm Logo" className="logo-image" />
-          BrainStorm
-        </div>
-        <p className="footer-text">Политика конфиденциальности</p>
-        <p className="footer-text">Соглашение на обработку персональных данных</p>
-        <div className="social-icons">
-          <a href="#">
-            <img src={youtubeIcon} alt="YouTube" className="social-icon" />
-          </a>
-          <a href="#">
-            <img src={faceBookIcon} alt="Facebook" className="social-icon" />
-          </a>
-          <a href="#">
-            <img src={twitterIcon} alt="Twitter" className="social-icon" />
-          </a>
-        </div>
-      </footer>
     </div>
   );
 };
