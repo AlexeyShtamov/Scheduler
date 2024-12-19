@@ -6,6 +6,7 @@ import faceBookIcon from '../assets/facebook-icon.svg';
 import twitterIcon from '../assets/twitter-icon.svg';
 import youtubeIcon from '../assets/youtube-icon.svg';
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/api";
 
 
 const RegisterPage: React.FC = () => {
@@ -23,10 +24,25 @@ const RegisterPage: React.FC = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-  };
+    const userData = {
+      firstName: formData.name,
+      lastName: formData.surname,
+      phone: formData.phone,
+      email: formData.email,
+      password: formData.password,
+      repeatPassword: formData.confirmPassword,
+    };
+    try{
+      const response = await registerUser(userData);
+      console.log('Регистрация успешна:', response);
+      navigate('/login'); // Перенаправление на страницу логина
+    } catch (error) {
+      console.error('Ошибка при регистрации:', error);
+      alert(`Ошибка: ${error}`);
+      }
+    }
 
   return (
     <div className="App">
