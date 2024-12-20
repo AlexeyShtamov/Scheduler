@@ -6,6 +6,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    IconButton,
     TextField,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -15,15 +16,17 @@ import dayjs from 'dayjs';
 import CloseButton from '../assets/close-button.svg';
 import closer from '../assets/closer.png';
 import { priorityOptions, users, Task, sprintOptions } from '../const';
+import DeleteIcon from '@mui/icons-material/Delete'
 
 interface CreateTaskDialogProps {
     open: boolean;
     onClose: () => void;
     onCreateTask: (newTask: Task) => void;
+    onDeleteTask: (taskId: string) => void;
     initialTask?: Task;
 }
 
-const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTask, initialTask }) => {
+const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTask, onDeleteTask, initialTask }) => {
     const [dialogPriority, setDialogPriority] = useState<string>(initialTask?.priority || '');
     const [selectedExecutor, setSelectedExecutor] = useState<string | null>(initialTask?.executor || null);
     const [selectedAuthor, setSelectedAuthor] = useState<string | null>(initialTask?.author || null);
@@ -38,10 +41,18 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
     const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : null;
     const formattedCompletionDate = completionDate ? completionDate.format('YYYY-MM-DD') : null;
 
+    useEffect(() => {
+        if (appointmentDate && completionDate) {
+            // Вычисление разницы в днях
+            const duration = completionDate.diff(appointmentDate, 'day'); // Разница в днях
+            setTaskTime(`${duration} дн.`); // Обновление поля трудозатрат
+        }
+    }, [appointmentDate, completionDate]);
+
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    useEffect(()=> {
-        if(initialTask && open){
+    useEffect(() => {
+        if (initialTask && open) {
             setDialogPriority(initialTask.priority || '');
             setSelectedExecutor(initialTask.executor || null);
             setSelectedAuthor(initialTask.author || null);
@@ -52,10 +63,10 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
             setTaskDescription(initialTask.description || '');
             setSprint(initialTask.sprint || '')
             setFiles(initialTask.files || []);
-        } else if(!open) {
+        } else if (!open) {
             resetFields(); // Если initialTask отсутствует, сбрасываем поля
         }
-        
+
     }, [initialTask, open])
 
     const resetFields = () => {
@@ -69,7 +80,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
         setTaskTime('');
         setTaskDescription('');
         setSprint(null);
-        
+
     };
 
     const handleClose = () => {
@@ -77,6 +88,12 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
         onClose(); // Закрываем диалог
     };
 
+    const handleDeleteTask = () => {
+        if (initialTask) {
+            onDeleteTask(initialTask.id); // Передаем id задачи на удаление
+            handleClose(); // Закрываем диалог после удаления
+        }
+    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files;
@@ -94,7 +111,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
     };
 
     const handleCreateTask = () => {
-       
+
 
         const newTask: Task = {
             id: initialTask?.id || `task-${Math.floor(Math.random() * 1000000)}-${Date.now()}`,
@@ -124,8 +141,20 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
         >
             <DialogTitle>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '24px', fontSize: '35px', lineHeight: '41.02px' }}>
-                    <span>{initialTask? 'РЕДАКТИРОВАТЬ ЗАДАЧУ' : 'СОЗДАТЬ ЗАДАЧУ'}</span>
-                    <Button sx={{ position: 'absolute', right: '53px' }} onClick={onClose}>
+                    <span>{initialTask ? 'РЕДАКТИРОВАТЬ ЗАДАЧУ' : 'СОЗДАТЬ ЗАДАЧУ'}</span>
+                    {initialTask && (
+                        <IconButton
+                            aria-label="delete"
+                            size="large"
+                            sx={{ position: 'absolute', right: '50px' }} // Позиционирование кнопки слева
+                            onClick={handleDeleteTask} // Обработчик удаления
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
+
+                    {/* Кнопка CloseButton справа */}
+                    <Button sx={{ position: 'absolute', right: 0 }} onClick={onClose}>
                         <img src={CloseButton} alt="Close" />
                     </Button>
                 </div>
@@ -194,77 +223,77 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                                 sx={{ backgroundColor: '#FF8513', borderRadius: '555px', marginTop: '50px' }}
                                 onClick={handleCreateTask}
                             >
-                               {initialTask ? 'Сохранить' : 'Создать'}
+                                {initialTask ? 'Сохранить' : 'Создать'}
                             </Button>
                         </DialogActions>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px'}}>
-                    <Autocomplete
-                        options={priorityOptions}
-                        value={{ label: dialogPriority }}
-                        onChange={(_, value) => setDialogPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
-                        renderInput={(params) => <TextField {...params} label="Приоритет" />}
-                        sx={{ maxWidth: '250px' }}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <Autocomplete
+                            options={priorityOptions}
+                            value={{ label: dialogPriority }}
+                            onChange={(_, value) => setDialogPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
+                            renderInput={(params) => <TextField {...params} label="Приоритет" />}
+                            sx={{ maxWidth: '250px' }}
+                        />
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        
 
-                        {/* Вторая колонка */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    label="Дата назначения"
-                                    value={appointmentDate}
-                                    onChange={(newDate: dayjs.Dayjs | null) => setAppointmentDate(newDate)}
-                                    sx={{ minWidth: '250px' }}
-                                />
-                            </LocalizationProvider>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    label="Дата выполнения"
-                                    value={completionDate}
-                                    onChange={(newDate: dayjs.Dayjs | null) => setCompletionDate(newDate)}
-                                    sx={{ minWidth: '250px' }}
-                                />
-                            </LocalizationProvider>
-                            <Autocomplete
-                                options={users}
-                                value={selectedExecutor ? users.find(user => user.label === selectedExecutor) || null : null}
-                                onChange={(_, newValue) => setSelectedExecutor(newValue?.label || '')}
-                                renderInput={(params) => <TextField {...params} label="Исполнитель" />}
-                                sx={{ minWidth: '250px' }}
-                            />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <Autocomplete
-                                disablePortal
-                                options={sprintOptions.map(option => option.title )}
-                                sx={{ width: 300 }}
-                                value={sprint || null}
-                                onChange={(_, newValue) => setSprint(newValue || null)}
-                                renderInput={(params) => <TextField {...params} label="Спринт" />}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Трудозатраты"
-                                id="task-time"
-                                variant="outlined"
-                                value={taskTime}
-                                onChange={(evt) => setTaskTime(evt.target.value)}
-                                sx={{ minWidth: '250px' }}
-                            />
-                            <Autocomplete
-                                options={users}
-                                value={selectedAuthor ? users.find(user => user.label === selectedAuthor) || null : null}
-                                onChange={(_, newValue) => setSelectedAuthor(newValue?.label || '')}
-                                renderInput={(params) => <TextField {...params} label="Автор задачи" />}
-                                sx={{ minWidth: '250px' }}
-                            />
+
+                            {/* Вторая колонка */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="Дата назначения"
+                                            value={appointmentDate}
+                                            onChange={(newDate: dayjs.Dayjs | null) => setAppointmentDate(newDate)}
+                                            sx={{ minWidth: '250px' }}
+                                        />
+                                    </LocalizationProvider>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="Дата выполнения"
+                                            value={completionDate}
+                                            onChange={(newDate: dayjs.Dayjs | null) => setCompletionDate(newDate)}
+                                            sx={{ minWidth: '250px' }}
+                                        />
+                                    </LocalizationProvider>
+                                    <Autocomplete
+                                        options={users}
+                                        value={selectedExecutor ? users.find(user => user.label === selectedExecutor) || null : null}
+                                        onChange={(_, newValue) => setSelectedExecutor(newValue?.label || '')}
+                                        renderInput={(params) => <TextField {...params} label="Исполнитель" />}
+                                        sx={{ minWidth: '250px' }}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <Autocomplete
+                                        disablePortal
+                                        options={sprintOptions.map(option => option.title)}
+                                        sx={{ width: 300 }}
+                                        value={sprint || null}
+                                        onChange={(_, newValue) => setSprint(newValue || null)}
+                                        renderInput={(params) => <TextField {...params} label="Спринт" />}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        label="Трудозатраты"
+                                        id="task-time"
+                                        variant="outlined"
+                                        value={taskTime}
+                                        onChange={(evt) => setTaskTime(evt.target.value)}
+                                        sx={{ minWidth: '250px' }}
+                                    />
+                                    <Autocomplete
+                                        options={users}
+                                        value={selectedAuthor ? users.find(user => user.label === selectedAuthor) || null : null}
+                                        onChange={(_, newValue) => setSelectedAuthor(newValue?.label || '')}
+                                        renderInput={(params) => <TextField {...params} label="Автор задачи" />}
+                                        sx={{ minWidth: '250px' }}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
-                </div>
                 </div>
             </DialogContent>
         </Dialog>

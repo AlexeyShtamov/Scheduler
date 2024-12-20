@@ -4,14 +4,16 @@ import arrow from '../assets/triangle.svg'
 import { User, Task } from '../const';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import TaskDialog from './TaskDialog';
+import dayjs from 'dayjs';
 
 
 type AuthTaskBoardProps = {
   users: User[];
   setUsersState: React.Dispatch<React.SetStateAction<User[]>>;
+  filterPriority: string;
 };
 
-const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) => {
+const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, filterPriority }) => {
   const [visibleTasks, setVisibleTasks] = useState<boolean[]>(() => users.map(() => true));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
@@ -20,6 +22,26 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
     setEditingTask(task)
     setIsDialogOpen(true)
   }
+
+  const filterTasks = (tasks: Task[]) => {
+    const normalizedPriority = filterPriority.trim().toLowerCase(); 
+    return normalizedPriority === 'все приоритеты' 
+      ? tasks 
+      : tasks.filter((task) => task.priority.trim().toLowerCase() === normalizedPriority);
+  };
+
+  const handleDeleteBoard = (taskId: string) => {
+    const updatedUsers = users.map((user) => {
+      const updatedTasks = { ...user.tasks };
+      ['assigned', 'inProgress', 'review', 'completed'].forEach((column) => {
+        const taskColumn = column as keyof User['tasks']; // Приводим к типу 'keyof User['tasks']'
+        updatedTasks[taskColumn] = updatedTasks[taskColumn].filter((task) => task.id !== taskId);
+      });
+      return { ...user, tasks: updatedTasks };
+    });
+  
+    setUsersState(updatedUsers); // Обновляем состояние
+  };
 
   const handleSaveTask = (updatedTask: Task) => {
     const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed']; // Задаем строгий тип для columnKeys
@@ -73,6 +95,16 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
     setUsersState(updatedUsers);
   };
 
+  const calculateTaskDuration = (task: Task) => {
+    if (task.appointmentDate && task.completionDate) {
+      const appointment = dayjs(task.appointmentDate);
+      const completion = dayjs(task.completionDate);
+      const durationInDays = completion.diff(appointment, 'day');
+      return `${durationInDays} дн.`; // Выводим продолжительность в днях
+    }
+    return 'Не указано'; // Если нет дат, выводим "Не указано"
+  };
+
   return (
     <div className="task-board task-board-auth">
       <div className="task-columns-header">
@@ -106,7 +138,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
                       {...provided.droppableProps}
                     >
                       {visibleTasks[userIndex] &&
-                        user.tasks[column].map((task) => (
+                        filterTasks(user.tasks[column]).map((task) => (
                           <Draggable key={task.id} draggableId={task.id} index={user.tasks[column].indexOf(task)}>
                             {(provided) => (
                               <div
@@ -122,7 +154,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
                                 </div>
                                 <div className="task-card-footer">
                                   <img src={checkIcon} alt="Галочка" className="check-icon" />
-                                  <span className="time-text">{task.time}</span>
+                                  <span className="time-text">{calculateTaskDuration(task)}</span>
                                 </div>
                               </div>
                             )}
@@ -141,6 +173,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState }) =
       open={isDialogOpen}
       onClose={() => setIsDialogOpen(false)}
       onCreateTask={handleSaveTask}
+      onDeleteTask={handleDeleteBoard}
       initialTask={editingTask} // Передаём задачу в диалог
       />
     </div>
