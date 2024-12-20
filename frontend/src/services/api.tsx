@@ -18,7 +18,7 @@ export const registerUser = async (userData: {
     repeatPassword: string;
   }) => {
     try {
-      const response = await api.post('/person', userData);
+      const response = await api.post('/people', userData);
       return response.data; // Успешный ответ
     } catch (error: any) {
       throw error.response?.data || error.message; // Обработка ошибок
