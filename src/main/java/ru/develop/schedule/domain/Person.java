@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.develop.schedule.domain.enums.Role;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
@@ -44,13 +45,13 @@ public class Person implements UserDetails {
     private Role role;
 
     @ManyToMany
-    private List<Project> project;
+    private List<Project> project = new ArrayList<>();
 
     @OneToMany(mappedBy = "worker")
-    private List<Task> tasks;
+    private List<Task> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
-    private List<Task> authorTasks;
+    private List<Task> authorTasks = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
