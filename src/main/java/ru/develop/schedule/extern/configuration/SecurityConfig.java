@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
@@ -23,6 +24,7 @@ import ru.develop.schedule.application.services.PersonService;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final PersonService personService;
@@ -48,6 +50,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/people").permitAll()
                         .requestMatchers("/people/auth").permitAll()
                         .requestMatchers("/people/**").authenticated()
+                        .requestMatchers("/api/projects/**").authenticated()
+                        .requestMatchers("/api/sprints/**").authenticated()
+                        .requestMatchers("/api/tasks/**").authenticated()
 
                         .requestMatchers("/h2-console/**").permitAll()
                 )

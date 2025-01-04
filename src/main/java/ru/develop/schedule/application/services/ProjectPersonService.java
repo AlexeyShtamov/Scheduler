@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Service
 public interface ProjectPersonService {
-    void checkPermission(Set<Role> roleAdmin, Long projectId, Long personId) throws NoPermissionException;
+    void checkPermission(Set<Role> roleAdmin, Long personId, Long projectId) throws NoPermissionException;
 
     void addSpecialPerson(Long userId, Long projectId, Person person, String role);
 }

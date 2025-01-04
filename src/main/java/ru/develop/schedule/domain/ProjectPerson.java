@@ -25,5 +25,6 @@ public class ProjectPerson {
     @MapsId("participantId")
     private Person participant;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 }

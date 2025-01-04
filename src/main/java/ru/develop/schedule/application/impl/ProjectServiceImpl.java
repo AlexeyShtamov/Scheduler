@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.develop.schedule.application.services.ProjectPersonService;
 import ru.develop.schedule.application.services.ProjectService;
-import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Project;
 import ru.develop.schedule.domain.enums.Role;
 import ru.develop.schedule.extern.exceptions.NoPermissionException;

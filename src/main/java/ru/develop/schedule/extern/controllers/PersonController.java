@@ -42,7 +42,7 @@ public class PersonController {
     @PutMapping("/contacts/{id}")
     public ResponseEntity<InfoPersonDTO> updateContacts(@RequestBody InfoPersonDTO infoPersonDTO, @PathVariable Long id){
         Person person = personMapper.fromInfoDTOToPerson(infoPersonDTO);
-        Person updatedPerson = personService.updateProfile(id, person);
+        Person updatedPerson = personService.updateContacts(id, person);
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
     }
 

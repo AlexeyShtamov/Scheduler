@@ -28,7 +28,7 @@ public class Project {
     /**
      *  участники
      */
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Person> people = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)

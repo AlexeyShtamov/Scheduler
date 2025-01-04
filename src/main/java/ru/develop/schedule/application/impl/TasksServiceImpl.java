@@ -63,22 +63,23 @@ public class TasksServiceImpl implements TasksService {
     @Transactional
     @Override
     public void createTask(Person currentPerson, Task task, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), personId, projectId);
 
         if (task != null) {
             task.setAuthor(currentPerson);
             task.setCreateDate(LocalDate.now());
             tasksRepository.save(task);
             log.info("Task created with author {}", currentPerson.getId());
+        }else {
+            log.error("Task cannot be null");
+            throw new IllegalArgumentException("Task cannot be null");
         }
-        log.error("Task cannot be null");
-        throw new IllegalArgumentException("Task cannot be null");
     }
 
     @Transactional
     @Override
     public void updateTask(Long taskId, UpdateTaskDTO updatedTask, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), personId, projectId);
         Task task = findTaskById(taskId);
 
         task.setTitle(updatedTask.title());
@@ -98,7 +99,7 @@ public class TasksServiceImpl implements TasksService {
     @Transactional
     @Override
     public void deleteTask(Long taskId, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR), projectId, personId);
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR), personId, projectId);
         tasksRepository.delete(findTaskById(taskId));
         log.info("task {} deleted", taskId);
     }
@@ -106,7 +107,7 @@ public class TasksServiceImpl implements TasksService {
     @Transactional
     @Override
     public void reviewTask(Long taskId, String comment, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_TUTOR), projectId, personId);
+        projectPersonService.checkPermission(Set.of(Role.ROLE_TUTOR), personId, projectId);
         Task task = findTaskById(taskId);
         task.setReview(comment);
         log.info("task {} reviewed", taskId);
@@ -116,7 +117,7 @@ public class TasksServiceImpl implements TasksService {
     @Transactional
     @Override
     public void changeStatus(Long taskId, Status status, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), personId, projectId);
 
         Task task = findTaskById(taskId);
         task.setStatus(status);

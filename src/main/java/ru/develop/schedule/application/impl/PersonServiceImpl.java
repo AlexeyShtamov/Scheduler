@@ -29,6 +29,7 @@ import ru.develop.schedule.extern.repositories.PersonRepository;
 import ru.develop.schedule.extern.repositories.ProjectPersonRepository;
 import ru.develop.schedule.extern.utils.JwtTokenUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -177,9 +178,13 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
             throw new PersonIsAlreadyExist("Person with email " + person.getEmail() + " is already exist");
         }
 
-        person.setPassword(passwordEncoder.encode(person.getPassword()));
+        String oldPass = person.getPassword();
+
+        person.setPassword(passwordEncoder.encode(oldPass));
+        person.setRole(Role.ROLE_ADMIN);
+
         Person createdPerson = personRepository.save(person);
-        sendMail(person.getEmail(), person.getPassword());
+        sendMail(email, oldPass);
         return createdPerson;
     }
 
@@ -203,6 +208,11 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         String token = jwtTokenUtils.generateToken(userDetails);
 
         return new JwtResponse(token);
+    }
+
+    @Override
+    public List<Person> findAllById(List<Long> id) {
+        return personRepository.findAllById(id);
     }
 
     private void sendMail(String email, String password) {

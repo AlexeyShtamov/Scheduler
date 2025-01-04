@@ -28,16 +28,24 @@ public class ProjectPersonServiceImpl implements ProjectPersonService {
     private final ProjectService projectService;
 
     public void checkPermission(Set<Role> roles, Long personId, Long projectId) throws NoPermissionException {
+        Person person = personService.findPersonById(personId);
+        if (person.getRole() != null && person.getRole().equals(Role.ROLE_ADMIN)) return;
+
         ProjectPerson projectPerson = projectPersonRepository
                 .findById(new ProjectPersonId(projectId, personId))
-                .orElseThrow(() -> new NullPointerException("No person with id " + personId + "in project id " + personId));
+                .orElseThrow(() -> new NullPointerException("No person with id " + personId + " in project id " + personId));
 
         boolean flag = false;
-        for (Role role : roles){
-            if (projectPerson.getRole().equals(role)) flag = true;
-            if (!flag)
-                throw new NoPermissionException("No permission person with id " + personId + "to action in project id " + personId);
+        for (Role role : roles) {
+            if (projectPerson.getRole().equals(role)){
+                flag = true;
+                break;
+            }
         }
+        if (!flag){
+            throw new NoPermissionException("No permission person with id " + personId + " to action in project id " + personId);
+        }
+
     }
 
     @Override

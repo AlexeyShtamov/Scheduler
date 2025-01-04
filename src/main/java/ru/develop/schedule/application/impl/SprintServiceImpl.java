@@ -37,9 +37,10 @@ public class SprintServiceImpl implements SprintService {
 
     @Transactional
     @Override
-    public void createSprint(Sprint sprint, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), projectId, personId);
+    public void createSprint(Sprint sprint, Long personId, Long projectId) throws NoPermissionException {
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR, Role.ROLE_STUDENT), personId, projectId);
 
+        projectService.findProjectById(projectId).getSprint().add(sprint);
         sprintRepository.save(sprint);
         log.info("Sprint created");
     }
@@ -47,7 +48,7 @@ public class SprintServiceImpl implements SprintService {
     @Transactional
     @Override
     public void deleteSprint(Long sprintId, Long projectId, Long personId) throws NoPermissionException {
-        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR), projectId, personId);
+        projectPersonService.checkPermission(Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERVISOR), personId, projectId);
         sprintRepository.deleteById(sprintId);
         log.info("Sprint with id {} deleted", sprintId);
     }

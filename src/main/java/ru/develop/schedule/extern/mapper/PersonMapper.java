@@ -55,7 +55,7 @@ public class PersonMapper {
         Person person = new Person();
         person.setFirstName(createAdminDTO.firstName());
         person.setLastName(createAdminDTO.lastName());
-        person.setEmail(createAdminDTO.emailSend());
+        person.setEmail(createAdminDTO.email());
         person.setPassword(createAdminDTO.password());
 
         return person;

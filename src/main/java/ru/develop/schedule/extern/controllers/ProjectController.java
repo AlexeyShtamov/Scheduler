@@ -3,12 +3,14 @@ package ru.develop.schedule.extern.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.develop.schedule.application.services.PersonService;
 import ru.develop.schedule.application.services.ProjectPersonService;
 import ru.develop.schedule.application.services.ProjectService;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.domain.Project;
+import ru.develop.schedule.extern.dto.CreateProjectDTO;
 import ru.develop.schedule.extern.dto.ProjectDTO;
 import ru.develop.schedule.extern.mapper.ProjectMapper;
 

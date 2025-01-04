@@ -41,6 +41,7 @@ public class Person implements UserDetails {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @ManyToMany

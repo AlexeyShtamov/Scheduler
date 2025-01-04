@@ -8,6 +8,8 @@ import ru.develop.schedule.extern.exceptions.IncorrectPasswordException;
 import ru.develop.schedule.extern.exceptions.PasswordMismatchException;
 import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
 
+import java.util.List;
+
 public interface PersonService extends UserDetailsService {
     Person save(Person person, String repeatPassword) throws PersonIsAlreadyExist, PasswordMismatchException;
 
@@ -28,4 +30,6 @@ public interface PersonService extends UserDetailsService {
     Person findByEmail(String email);
 
     JwtResponse createAuthToken(JwtRequest authRequest);
+
+    List<Person> findAllById(List<Long> id);
 }
