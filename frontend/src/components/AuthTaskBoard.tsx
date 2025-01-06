@@ -44,7 +44,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
   };
 
   const handleSaveTask = (updatedTask: Task) => {
-    const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed']; // Задаем строгий тип для columnKeys
+    const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed']; 
 
     const updatedUsers = users.map((user) => {
         const updatedTasks = { ...user.tasks };
@@ -100,9 +100,9 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
       const appointment = dayjs(task.appointmentDate);
       const completion = dayjs(task.completionDate);
       const durationInDays = completion.diff(appointment, 'day');
-      return `${durationInDays} дн.`; // Выводим продолжительность в днях
+      return `${durationInDays} дн.`;
     }
-    return 'Не указано'; // Если нет дат, выводим "Не указано"
+    return 'Не указано';
   };
 
   return (
@@ -174,7 +174,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
       onClose={() => setIsDialogOpen(false)}
       onCreateTask={handleSaveTask}
       onDeleteTask={handleDeleteBoard}
-      initialTask={editingTask} // Передаём задачу в диалог
+      initialTask={editingTask} 
       />
     </div>
   );

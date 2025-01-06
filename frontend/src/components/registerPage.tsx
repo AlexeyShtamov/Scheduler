@@ -34,7 +34,7 @@ const RegisterPage: React.FC = () => {
       password: formData.password,
       repeatPassword: formData.confirmPassword,
     };
-    console.log(userData)
+
     try{
       const response = await registerUser(userData);
       console.log('Регистрация успешна:', response);

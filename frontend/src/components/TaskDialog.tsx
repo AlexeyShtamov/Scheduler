@@ -37,6 +37,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
     const [taskTime, setTaskTime] = useState(initialTask?.time || '');
     const [taskDescription, setTaskDescription] = useState(initialTask?.description || '');
     const [sprint, setSprint] = useState<string | null>(initialTask?.sprint || null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : null;
     const formattedCompletionDate = completionDate ? completionDate.format('YYYY-MM-DD') : null;
@@ -49,7 +50,6 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
         }
     }, [appointmentDate, completionDate]);
 
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         if (initialTask && open) {
