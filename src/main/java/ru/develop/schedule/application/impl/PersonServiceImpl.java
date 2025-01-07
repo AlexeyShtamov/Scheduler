@@ -4,6 +4,7 @@ import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -46,7 +47,9 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     @Value("${spring.mail.sender.email}")
     private String senderMail;
 
-    public PersonServiceImpl(PersonRepository personRepository, @Lazy PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository, @Lazy AuthenticationManager authenticationManager, JwtTokenUtils jwtTokenUtils, JavaMailSender javaMailSender) {
+    public PersonServiceImpl(PersonRepository personRepository,
+                             @Lazy PasswordEncoder passwordEncoder,
+                             ProjectPersonRepository projectPersonRepository, @Lazy AuthenticationManager authenticationManager, JwtTokenUtils jwtTokenUtils, JavaMailSender javaMailSender) {
         this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
         this.projectPersonRepository = projectPersonRepository;
@@ -172,20 +175,8 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Override
-    public Person createAdmin(Person person, String email) throws PersonIsAlreadyExist {
-
-        if (personRepository.findByEmail(person.getEmail()).isPresent()) {
-            throw new PersonIsAlreadyExist("Person with email " + person.getEmail() + " is already exist");
-        }
-
-        String oldPass = person.getPassword();
-
-        person.setPassword(passwordEncoder.encode(oldPass));
-        person.setRole(Role.ROLE_ADMIN);
-
-        Person createdPerson = personRepository.save(person);
-        sendMail(email, oldPass);
-        return createdPerson;
+    public Person createAdmin(Person person, String email) {
+        return null;
     }
 
 

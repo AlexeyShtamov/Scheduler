@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.develop.schedule.application.services.PersonService;
 import ru.develop.schedule.domain.Person;
 import ru.develop.schedule.extern.dto.*;
+import ru.develop.schedule.extern.dto.CreatePersonDTO;
+import ru.develop.schedule.extern.dto.InfoPersonDTO;
+import ru.develop.schedule.extern.dto.UpdatePasswordDTO;
 import ru.develop.schedule.extern.exceptions.IncorrectPasswordException;
 import ru.develop.schedule.extern.exceptions.PasswordMismatchException;
 import ru.develop.schedule.extern.exceptions.PersonIsAlreadyExist;
@@ -26,12 +29,6 @@ public class PersonController {
         return new ResponseEntity<>(personMapper.fromPersonToDTO(createdPerson), HttpStatus.OK);
     }
 
-    @PostMapping("/admin")
-    public ResponseEntity<InfoPersonDTO> createAdmin(@RequestBody CreateAdminDTO createAdminDTO) throws PersonIsAlreadyExist, PasswordMismatchException {
-        Person createdPerson = personService.createAdmin(personMapper.fromCreateAdminDTOToPerson(createAdminDTO), createAdminDTO.emailSend());
-        return new ResponseEntity<>(personMapper.fromPersonToDTO(createdPerson), HttpStatus.OK);
-    }
-
     @PutMapping("/profile/{id}")
     public ResponseEntity<InfoPersonDTO> updateProfile(@RequestBody InfoPersonDTO infoPersonDTO, @PathVariable Long id){
         Person person = personMapper.fromInfoDTOToPerson(infoPersonDTO);
@@ -42,7 +39,7 @@ public class PersonController {
     @PutMapping("/contacts/{id}")
     public ResponseEntity<InfoPersonDTO> updateContacts(@RequestBody InfoPersonDTO infoPersonDTO, @PathVariable Long id){
         Person person = personMapper.fromInfoDTOToPerson(infoPersonDTO);
-        Person updatedPerson = personService.updateContacts(id, person);
+        Person updatedPerson = personService.updateProfile(id, person);
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
     }
 
@@ -50,12 +47,6 @@ public class PersonController {
     public ResponseEntity<InfoPersonDTO> updatePassword(@RequestBody UpdatePasswordDTO updatePasswordDTO, @PathVariable Long id) throws IncorrectPasswordException {
         Person updatedPerson = personService.updatePassword(id, updatePasswordDTO.password(), updatePasswordDTO.repeatPassword());
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
-    }
-
-    @PostMapping("/auth")
-    public ResponseEntity<JwtResponse> createAuthToken(@RequestBody JwtRequest authRequest) {
-        JwtResponse jwtResponse = personService.createAuthToken(authRequest);
-        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
     }
 
 

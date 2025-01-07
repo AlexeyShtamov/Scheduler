@@ -8,6 +8,6 @@ import java.util.List;
 public record ProjectDTO(
         @NotEmpty Long id,
         @NotEmpty @NotNull String boardName,
-        List<InfoPersonDTO> users
-) {
+        List<InfoPersonDTO> users,
+        List<SprintDTO> sprints) {
 }
