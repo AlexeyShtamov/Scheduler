@@ -49,7 +49,11 @@ public class PersonController {
         return new ResponseEntity<>(personMapper.fromPersonToDTO(updatedPerson), HttpStatus.OK);
     }
 
-
+    @PostMapping("/auth")
+    public ResponseEntity<JwtResponse> createAuthToken(@RequestBody JwtRequest authRequest) {
+        JwtResponse jwtResponse = personService.createAuthToken(authRequest);
+        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
+    }
 
 
 }
