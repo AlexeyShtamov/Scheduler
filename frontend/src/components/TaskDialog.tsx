@@ -131,6 +131,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
             completionDate: formattedCompletionDate,
             sprint: sprint,
             files,
+            status: 'APPOINTED'
         };
 
         onCreateTask(newTask);

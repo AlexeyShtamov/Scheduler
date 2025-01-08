@@ -43,6 +43,7 @@ const mainPagePriorityOptions = [
       completionDate: string | null
       sprint: string | null
       files: File[]
+      status: string
     };
     
     
