@@ -17,13 +17,22 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (evt: React.FormEvent) => {
     evt.preventDefault();
     const credentials = { email, password };
-
+  
     try {
       const response = await loginUser(credentials); // Отправка данных для авторизации
       console.log('Авторизация успешна:', response);
-      // Сохраняем токен или информацию о пользователе, если нужно
-      localStorage.setItem("authToken", response.token); // Пример сохранения токена
-      navigate("/task"); // Перенаправление на страницу задач
+      
+      // Сохраняем токен и ID пользователя в localStorage
+      localStorage.setItem("authToken", response.token);
+      if (response.id) {
+        console.log('ID пользователя:', response.id);
+        localStorage.setItem("personId", response.id); // Сохраняем id в localStorage
+      } else {
+        console.error('ID не найден в ответе');
+      }
+      
+      // Перенаправление на страницу задач
+      navigate("/task");
     } catch (error) {
       console.error('Ошибка при авторизации:', error);
       alert(`Ошибка: ${error}`);

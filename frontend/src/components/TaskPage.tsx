@@ -1,107 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { Fab, Autocomplete, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
+import { Autocomplete, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import logo from '../assets/logo.svg';
 import avatar from '../assets/avatar2.svg';
-import AuthTaskBoard from './AuthTaskBoard';
+import { AuthTaskBoard } from './AuthTaskBoard';
 import TaskDialog from './TaskDialog';
-import { mainPagePriorityOptions, sprintOptions, users, Task } from '../const';
+import { mainPagePriorityOptions } from '../const';
 import CreateSprintDialog from './CreateSprintDialog';
-import { getProjects, createBoard, getSprints, createSprint } from '../services/api';
+import { getProjects, createBoard, createSprint } from '../services/api';
 
-interface Sprint {
+export interface Sprint {
   title: string;
   id: number;
   startDate: string;
   endDate: string;
-  projectId: number
+  projectId: number;
 }
 
 interface Board {
   id: number;
   boardName: string;
-  users: string[];
+  users: string[]; // Пользователи, связанные с доской
   sprints: Sprint[];
 }
 
 const TaskPage: React.FC = () => {
   const [selectedBoard, setSelectedBoard] = useState('');
   const [mainPagePriority, setMainPagePriority] = useState('ВСЕ ПРИОРИТЕТЫ');
-  const [usersState, setUsersState] = useState(users);
+  const [usersState, setUsersState] = useState<any[]>([]); // Используем any[] пока не знаем точную структуру
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isCreateSprintDialogOpen, setCreateSprintDialogOpen] = useState(false);
   const [sprintOptionsState, setSprintOptionsState] = useState<Sprint[]>([]);
   const [selectedSprint, setSelectedSprint] = useState<string>('');
-  const [boards, setBoards] = useState<Board[]>([]); // Здесь изменяем тип на массив объектов досок
+  const [boards, setBoards] = useState<Board[]>([]); // Доски
   const [isCreateBoardDialogOpen, setCreateBoardDialogOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
+
+
 
   useEffect(() => {
   const loadBoards = async () => {
     try {
       const data = await getProjects(1); // Пример с projectId = 1
-      console.log('Полученные данные:', data); // Добавьте логирование для проверки
-      if (Array.isArray(data)) {
-        setBoards(data);
-      } else {
-        console.error('Ответ от сервера не является массивом', data);
+      console.log('Полученные данные:', data);
+
+      if (data && Array.isArray(data.users)) {
+        localStorage.setItem("users", JSON.stringify(data.users));
+        setUsersState(data.users); // Обновляем состояние пользователей
+        console.log('Загруженные пользователи:', data.users); // Выводим пользователей
       }
+
+      if (data && data.boardName) {
+        setSelectedBoard(data.boardName);
+        // Если это не новая доска, добавляем её в список досок
+        setBoards(prevBoards => [
+          ...prevBoards.filter(board => board.boardName !== data.boardName),
+          { 
+            boardName: data.boardName, 
+            id: data.id,
+            users: data.users, 
+            sprints: data.sprints  
+          }
+        ]);
+      }
+
+      // Если `data.sprints` существует и это массив, обновляем спринты
+      if (data && Array.isArray(data.sprints)) {
+        setSprintOptionsState(data.sprints);
+        console.log('Загруженные спринты:', data.sprints); // Выводим спринты
+      }
+
+
     } catch (error) {
-      console.error('Ошибка при загрузке досок:', error);
+      console.error('Ошибка при загрузке данных:', error);
     }
   };
 
   loadBoards();
 }, []);
 
-  useEffect(() => {
-  const loadSprints = async () => {
-    try {
-      const data = await getSprints(1);
-      console.log('Спринты:', data); // Логирование полученных данных
-      setSprintOptionsState(data);
-    } catch (error) {
-      console.error('Ошибка при загрузке спринтов:', error);
-    }
-  };
-
-  loadSprints();
-}, []);
-
-  const handleOpenDialog = () => {
-    setDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-  };
-
-  const handleOpenCreateSprintDialog = () => {
-    setCreateSprintDialogOpen(true);
-  };
-
-  const handleCloseCreateSprintDialog = () => {
-    setCreateSprintDialogOpen(false);
-  };
-
   const handleCreateBoard = async () => {
-    
-      const newBoard = { boardName: newBoardName, id: 1 };
-      
-      try {
-        // Отправляем запрос на сервер для создания доски
-        await createBoard(newBoard); // Отправляем запрос без ожидания ответа, так как сервер возвращает 204
-        
-        // После создания доски перезагружаем список досок с сервера
-        const updatedBoards = await getProjects(1); // Получаем обновленный список досок
-        setBoards(updatedBoards); // Обновляем состояние досок
-        setSelectedBoard(newBoardName);
-        setCreateBoardDialogOpen(false);
-        setNewBoardName('');
-      } catch (error) {
-        console.error('Ошибка при создании доски:', error);
-      }
+    const newBoard = { boardName: newBoardName, id: 1 };
 
+    try {
+      await createBoard(newBoard); // Отправляем запрос на создание доски
+      const updatedBoards = await getProjects(1); // Получаем обновленные доски
+      setBoards(updatedBoards); // Обновляем состояние
+      setSelectedBoard(newBoardName);
+      setCreateBoardDialogOpen(false);
+      setNewBoardName('');
+    } catch (error) {
+      console.error('Ошибка при создании доски:', error);
+    }
   };
 
   const handleCreateSprint = (newSprintName: string, startDate: string, endDate: string) => {
@@ -110,31 +100,16 @@ const TaskPage: React.FC = () => {
       startDate, 
       endDate,
       projectId: 1,
-      id: sprintOptionsState.length + 1 // Укажите id проекта, к которому относится спринт
+      id: sprintOptionsState.length + 1
     };
-  
-    setSprintOptionsState((prevSprints) => [...prevSprints, newSprint]); // Обновляем состояние с новым спринтом
-  
-    // Теперь отправим запрос на сервер
+
+    setSprintOptionsState((prevSprints) => [...prevSprints, newSprint]);
+
     try {
-      createSprint(newSprint);  // Отправляем запрос для сохранения спринта на сервере
-      setSelectedSprint(newSprintName);  // Выбираем только что созданный спринт
+      createSprint(newSprint);
+      setSelectedSprint(newSprintName);
     } catch (error) {
       console.error('Ошибка при создании спринта:', error);
-    }
-  };
-
-  const handleCreateTask = (newTask: Task) => {
-    const assignedUserIndex = usersState.findIndex((user) => user.label === newTask.executor);
-    if (assignedUserIndex >= 0) {
-      setUsersState((prevUsers) => {
-        const updatedUsers = [...prevUsers];
-        updatedUsers[assignedUserIndex] = {
-          ...updatedUsers[assignedUserIndex],
-          tasks: { ...updatedUsers[assignedUserIndex].tasks, assigned: [...updatedUsers[assignedUserIndex].tasks.assigned, newTask] },
-        };
-        return updatedUsers;
-      });
     }
   };
 
@@ -155,12 +130,12 @@ const TaskPage: React.FC = () => {
               value={{ boardName: selectedBoard, id: boards.length }}
               onChange={(_, value) => {
                 if (value?.boardName === 'Создать') {
-                  setCreateBoardDialogOpen(true); // Открываем диалог создания новой доски
+                  setCreateBoardDialogOpen(true);
                 } else {
                   setSelectedBoard(value?.boardName || 'МОЯ');
                 }
               }}
-              getOptionLabel={(option) => option.boardName || option.boardName || ''}
+              getOptionLabel={(option) => option.boardName || ''}
               renderInput={(params) => <TextField {...params} label="Доска" />}
             />
             <Autocomplete
@@ -172,7 +147,7 @@ const TaskPage: React.FC = () => {
               onChange={(_, value) => setMainPagePriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
               renderInput={(params) => <TextField {...params} label="Приоритет" />}
             />
-            <Fab color="primary" aria-label="add" className="add-icon" onClick={handleOpenDialog}>
+            <Fab color="primary" aria-label="add" className="add-icon" onClick={() => setDialogOpen(true)}>
               <AddIcon />
             </Fab>
           </div>
@@ -186,9 +161,10 @@ const TaskPage: React.FC = () => {
       <div className="header-line"></div>
       <TaskDialog
         open={isDialogOpen}
-        onClose={handleCloseDialog}
-        onCreateTask={handleCreateTask}
+        onClose={() => setDialogOpen(false)}
+        onCreateTask={() => {}}
         onDeleteTask={() => {}}
+        sprintOptionsState={sprintOptionsState}
       />
       <p className="header-card">
         Моя команда
@@ -199,7 +175,7 @@ const TaskPage: React.FC = () => {
           value={selectedSprint}
           onChange={(_, value) => {
             if (value === 'Добавить новый спринт') {
-              handleOpenCreateSprintDialog();
+              setCreateSprintDialogOpen(true);
             } else {
               setSelectedSprint(value || '');
             }
@@ -209,13 +185,13 @@ const TaskPage: React.FC = () => {
       </p>
       <div className="header-card-line"></div>
       <AuthTaskBoard 
-        users={usersState} 
-        setUsersState={setUsersState}
+        users={usersState}  // Передаем список пользователей
+        setUsersState={setUsersState}  // Передаем setUsersState
         filterPriority={mainPagePriority} 
       />
       <CreateSprintDialog
         open={isCreateSprintDialogOpen}
-        onClose={handleCloseCreateSprintDialog}
+        onClose={() => setCreateSprintDialogOpen(false)}
         onCreateSprint={handleCreateSprint}
         projectId={1}
       />
@@ -230,15 +206,17 @@ const TaskPage: React.FC = () => {
             value={newBoardName}
             onChange={(e) => setNewBoardName(e.target.value)}
             autoFocus
-            sx={{minWidth: '300px'}}
+            sx={{ minWidth: '300px' }}
           />
         </DialogContent>
-        <DialogActions sx={{display: 'flex', justifyContent: 'flex-start', px: 3 }}>
-          <Button onClick={handleCreateBoard} sx={{backgroundColor: '#FF8513', borderRadius: '555px', color: 'white'}}>Создать</Button>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'flex-start', px: 3 }}>
+          <Button onClick={handleCreateBoard} sx={{ backgroundColor: '#FF8513', borderRadius: '555px', color: 'white' }}>
+            Создать
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 };
 
-export { TaskPage };
+export { TaskPage }

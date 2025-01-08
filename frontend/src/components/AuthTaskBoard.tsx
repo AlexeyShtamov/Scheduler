@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
-import checkIcon from '../assets/check.svg'
-import arrow from '../assets/triangle.svg'
-import { User, Task } from '../const';
+import React, { useState, useEffect } from 'react';
+import checkIcon from '../assets/check.svg';
+import arrow from '../assets/triangle.svg';
+import { Task } from '../const';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import TaskDialog from './TaskDialog';
 import dayjs from 'dayjs';
 
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  tasks: {
+    assigned: Task[];
+    inProgress: Task[];
+    review: Task[];
+    completed: Task[];
+  };
+}
 
 type AuthTaskBoardProps = {
   users: User[];
@@ -13,20 +25,30 @@ type AuthTaskBoardProps = {
   filterPriority: string;
 };
 
-const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, filterPriority }) => {
-  const [visibleTasks, setVisibleTasks] = useState<boolean[]>(() => users.map(() => true));
+export const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
+  users,
+  setUsersState,
+  filterPriority,
+}) => {
+  // Инициализируем visibleTasks с количеством пользователей
+  const [visibleTasks, setVisibleTasks] = useState<boolean[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
-  const handleTaskClick = (task : Task) =>{
-    setEditingTask(task)
-    setIsDialogOpen(true)
-  }
+  useEffect(() => {
+    // Синхронизируем состояние visibleTasks при изменении данных о пользователях
+    setVisibleTasks(users.map(() => true)); // Все задачи видимы по умолчанию
+  }, [users]); // Обновляется только когда users изменяется
+
+  const handleTaskClick = (task: Task) => {
+    setEditingTask(task);
+    setIsDialogOpen(true);
+  };
 
   const filterTasks = (tasks: Task[]) => {
-    const normalizedPriority = filterPriority.trim().toLowerCase(); 
-    return normalizedPriority === 'все приоритеты' 
-      ? tasks 
+    const normalizedPriority = filterPriority.trim().toLowerCase();
+    return normalizedPriority === 'все приоритеты'
+      ? tasks
       : tasks.filter((task) => task.priority.trim().toLowerCase() === normalizedPriority);
   };
 
@@ -34,25 +56,27 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
     const updatedUsers = users.map((user) => {
       const updatedTasks = { ...user.tasks };
       ['assigned', 'inProgress', 'review', 'completed'].forEach((column) => {
-        const taskColumn = column as keyof User['tasks']; // Приводим к типу 'keyof User['tasks']'
+        const taskColumn = column as keyof User['tasks'];
         updatedTasks[taskColumn] = updatedTasks[taskColumn].filter((task) => task.id !== taskId);
       });
       return { ...user, tasks: updatedTasks };
     });
-  
+
     setUsersState(updatedUsers); // Обновляем состояние
   };
 
   const handleSaveTask = (updatedTask: Task) => {
-    const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed']; 
+    const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed'];
 
     const updatedUsers = users.map((user) => {
         const updatedTasks = { ...user.tasks };
+
         columnKeys.forEach((column) => {
             updatedTasks[column] = updatedTasks[column].map((task) =>
                 task.id === updatedTask.id ? updatedTask : task
             );
         });
+
         return { ...user, tasks: updatedTasks };
     });
 
@@ -70,28 +94,23 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
     if (!destination) return; // Если элемент не был перенесен в другую позицию
-  
+
     const sourceUserIndex = parseInt(source.droppableId.split('-')[1]);
     const sourceColumn = source.droppableId.split('-')[0] as keyof User['tasks'];
     const destinationColumn = destination.droppableId.split('-')[0] as keyof User['tasks'];
-  
-    // Найдем задачу, которую перетаскивают, используя draggableId (которое теперь является уникальным id задачи)
+
     const draggedTask = users[sourceUserIndex].tasks[sourceColumn].find(
       (task) => task.id === draggableId
     );
-  
-    // Если задача не найдена, прекращаем выполнение
+
     if (!draggedTask) return;
-  
+
     const updatedUsers = [...users];
-    // Убираем задачу из исходной колонки
     updatedUsers[sourceUserIndex].tasks[sourceColumn] = updatedUsers[sourceUserIndex].tasks[sourceColumn].filter(
       (task) => task.id !== draggableId
     );
-  
-    // Добавляем задачу в целевую колонку
     updatedUsers[sourceUserIndex].tasks[destinationColumn].push(draggedTask);
-  
+
     setUsersState(updatedUsers);
   };
 
@@ -118,7 +137,7 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
         <div key={userIndex} className="user-section">
           <div className="main-line"></div>
           <h2>
-            {user.label}
+            {user.firstName} {user.lastName}
             <img
               src={arrow}
               alt="arrow"
@@ -138,28 +157,30 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
                       {...provided.droppableProps}
                     >
                       {visibleTasks[userIndex] &&
-                        filterTasks(user.tasks[column]).map((task) => (
-                          <Draggable key={task.id} draggableId={task.id} index={user.tasks[column].indexOf(task)}>
-                            {(provided) => (
-                              <div
-                                className="task-card"
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                onClick={() => handleTaskClick(task)}
-                              >
-                                <div className="task-card-header">
-                                  <span className="task-title">{task.title}</span>
-                                  <img src={user.avatar} alt="Аватар" className="avatar-icon" />
+                        user.tasks?.[column]?.length ? (
+                          filterTasks(user.tasks[column]).map((task) => (
+                            <Draggable key={task.id} draggableId={task.id} index={user.tasks[column].indexOf(task)}>
+                              {(provided) => (
+                                <div
+                                  className="task-card"
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  onClick={() => handleTaskClick(task)}
+                                >
+                                  <div className="task-card-header">
+                                    <span className="task-title">{task.title}</span>
+                                    <img src={user.avatar} alt="Аватар" className="avatar-icon" />
+                                  </div>
+                                  <div className="task-card-footer">
+                                    <img src={checkIcon} alt="Галочка" className="check-icon" />
+                                    <span className="time-text">{calculateTaskDuration(task)}</span>
+                                  </div>
                                 </div>
-                                <div className="task-card-footer">
-                                  <img src={checkIcon} alt="Галочка" className="check-icon" />
-                                  <span className="time-text">{calculateTaskDuration(task)}</span>
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                              )}
+                            </Draggable>
+                          ))
+                        ) : null}
                       {provided.placeholder}
                     </div>
                   )}
@@ -170,14 +191,13 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({ users, setUsersState, fil
         </div>
       ))}
       <TaskDialog
-      open={isDialogOpen}
-      onClose={() => setIsDialogOpen(false)}
-      onCreateTask={handleSaveTask}
-      onDeleteTask={handleDeleteBoard}
-      initialTask={editingTask} 
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onCreateTask={handleSaveTask}
+        onDeleteTask={handleDeleteBoard}
+        initialTask={editingTask}
+        sprintOptionsState={[]}
       />
     </div>
   );
 };
-
-export default AuthTaskBoard;
