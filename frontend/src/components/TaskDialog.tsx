@@ -238,7 +238,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                         <Autocomplete
                             options={priorityOptions}
                             value={{ label: dialogPriority }}
-                            onChange={(_, value) => setDialogPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
+                            onChange={(_, value) => setDialogPriority(value?.label || '')}
                             renderInput={(params) => <TextField {...params} label="Приоритет" />}
                             sx={{ maxWidth: '250px' }}
                         />

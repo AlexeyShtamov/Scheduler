@@ -30,15 +30,13 @@ export const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
   setUsersState,
   filterPriority,
 }) => {
-  // Инициализируем visibleTasks с количеством пользователей
   const [visibleTasks, setVisibleTasks] = useState<boolean[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
   useEffect(() => {
-    // Синхронизируем состояние visibleTasks при изменении данных о пользователях
-    setVisibleTasks(users.map(() => true)); // Все задачи видимы по умолчанию
-  }, [users]); // Обновляется только когда users изменяется
+    setVisibleTasks(users.map(() => true));
+  }, [users]);
 
   const handleTaskClick = (task: Task) => {
     setEditingTask(task);
@@ -62,26 +60,26 @@ export const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
       return { ...user, tasks: updatedTasks };
     });
 
-    setUsersState(updatedUsers); // Обновляем состояние
+    setUsersState(updatedUsers);
   };
 
   const handleSaveTask = (updatedTask: Task) => {
     const columnKeys: (keyof User['tasks'])[] = ['assigned', 'inProgress', 'review', 'completed'];
 
     const updatedUsers = users.map((user) => {
-        const updatedTasks = { ...user.tasks };
+      const updatedTasks = { ...user.tasks };
 
-        columnKeys.forEach((column) => {
-            updatedTasks[column] = updatedTasks[column].map((task) =>
-                task.id === updatedTask.id ? updatedTask : task
-            );
-        });
+      columnKeys.forEach((column) => {
+        updatedTasks[column] = updatedTasks[column].map((task) =>
+          task.id === updatedTask.id ? updatedTask : task
+        );
+      });
 
-        return { ...user, tasks: updatedTasks };
+      return { ...user, tasks: updatedTasks };
     });
 
-    setUsersState(updatedUsers); // Сохраняем обновленные данные в состоянии
-};
+    setUsersState(updatedUsers);
+  };
 
   const toggleTasksVisibility = (index: number) => {
     setVisibleTasks((prev) => {
@@ -93,7 +91,7 @@ export const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
-    if (!destination) return; // Если элемент не был перенесен в другую позицию
+    if (!destination) return;
 
     const sourceUserIndex = parseInt(source.droppableId.split('-')[1]);
     const sourceColumn = source.droppableId.split('-')[0] as keyof User['tasks'];
@@ -122,6 +120,17 @@ export const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
       return `${durationInDays} дн.`;
     }
     return 'Не указано';
+  };
+
+  const handleCreateTask = (newTask: Task) => {
+    console.log("Новая задача:", newTask); // Логируем задачу перед обновлением состояния
+    const updatedUsers = users.map((user) => {
+      const updatedTasks = { ...user.tasks };
+      updatedTasks.assigned = [...updatedTasks.assigned, newTask];
+      return { ...user, tasks: updatedTasks };
+    });
+  
+    setUsersState(updatedUsers); // Обновляем состояние пользователей
   };
 
   return (
@@ -190,6 +199,7 @@ export const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
           </div>
         </div>
       ))}
+
       <TaskDialog
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
