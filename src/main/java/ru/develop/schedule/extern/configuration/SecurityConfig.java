@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import ru.develop.schedule.application.services.PersonService;
 
 @Configuration
@@ -61,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/projects/**").authenticated()
                         .requestMatchers("/api/sprints/**").authenticated()
                         .requestMatchers("/api/tasks/**").authenticated()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
 
                 )
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
