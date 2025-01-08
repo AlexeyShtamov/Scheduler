@@ -198,7 +198,9 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         UserDetails userDetails = loadUserByUsername(authRequest.email());
         String token = jwtTokenUtils.generateToken(userDetails);
 
-        return new JwtResponse(token);
+        Long id = findByEmail(userDetails.getUsername()).getId();
+
+        return new JwtResponse(id, token);
     }
 
     @Override
