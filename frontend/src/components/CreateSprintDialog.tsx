@@ -8,6 +8,7 @@ interface CreateSprintDialogProps {
     open: boolean;
     onClose: () => void;
     onCreateSprint: (newSprintName: string, appointmentDate: string, completionDate: string) => void;
+    projectId:1
 }
 
 const CreateSprintDialog: React.FC<CreateSprintDialogProps> = ({ open, onClose, onCreateSprint }) => {
@@ -19,9 +20,10 @@ const CreateSprintDialog: React.FC<CreateSprintDialogProps> = ({ open, onClose, 
         const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : '';
         const formattedCompletionDate = completionDate ? completionDate.format('YYYY-MM-DD') : '';
         console.log('Новый спринт создан:', {
-            newSprintName,
-            appointmentDate: formattedAppointmentDate,
-            completionDate: formattedCompletionDate
+            title:newSprintName,
+            startDate: formattedAppointmentDate,
+            endDate: formattedCompletionDate,
+            projectId:1
         });
         onCreateSprint(newSprintName, formattedAppointmentDate, formattedCompletionDate);
         onClose();

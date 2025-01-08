@@ -6,6 +6,7 @@ import faceBookIcon from '../assets/facebook-icon.svg';
 import twitterIcon from '../assets/twitter-icon.svg';
 import youtubeIcon from '../assets/youtube-icon.svg';
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../services/api";
 
 
 const LoginPage: React.FC = () => {
@@ -13,10 +14,20 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleSubmit = (evt: React.FormEvent) => {
+  const handleSubmit = async (evt: React.FormEvent) => {
     evt.preventDefault();
-    console.log({email, password})
-    navigate("/task");
+    const credentials = { email, password };
+
+    try {
+      const response = await loginUser(credentials); // Отправка данных для авторизации
+      console.log('Авторизация успешна:', response);
+      // Сохраняем токен или информацию о пользователе, если нужно
+      localStorage.setItem("authToken", response.token); // Пример сохранения токена
+      navigate("/task"); // Перенаправление на страницу задач
+    } catch (error) {
+      console.error('Ошибка при авторизации:', error);
+      alert(`Ошибка: ${error}`);
+    }
   };
 
    return (
