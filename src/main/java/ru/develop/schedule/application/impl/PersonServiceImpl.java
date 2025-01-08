@@ -217,4 +217,9 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         smm.setText("Логин: " + email + ". Пароль: " + password);
         javaMailSender.send(smm);
     }
+
+    @Override
+    public Person findByFullName(String firstName, String lastName) {
+        return personRepository.findByFirstNameAndLastName(firstName, lastName).orElseThrow(() -> new NullPointerException("Нет пользователя с таким именем"));
+    }
 }

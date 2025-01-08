@@ -32,4 +32,6 @@ public interface PersonService extends UserDetailsService {
     JwtResponse createAuthToken(JwtRequest authRequest);
 
     List<Person> findAllById(List<Long> id);
+
+    Person findByFullName(String firstName, String lastName);
 }
