@@ -68,20 +68,19 @@ export const registerUser = async (userData: {
   };
 
   export const createSprint = async (newSprint: { title: string; startDate: string; endDate: string; projectId: number }) => {
+    // Извлекаем id пользователя из сохраненного в localStorage personId
     const personID = localStorage.getItem("personId");
-    console.log(personID); // Получаем id пользователя
-  
+    console.log(personID) // Получаем id пользователя
+
     if (!personID) {
       throw new Error('Не удалось найти пользователя. Пожалуйста, авторизуйтесь.');
     }
-  
+
     try {
-      // Добавляем personID в тело запроса
-      const response = await api.post('/api/sprints', {
-        ...newSprint,
-        personID, // Передаем personID в теле запроса
+      // Добавляем personID как параметр запроса
+      const response = await api.post('/api/sprints', newSprint, {
+        params: { personID }, // Передаем personID как параметр запроса
       });
-  
       return response.data; // Возвращаем данные ответа, если запрос прошел успешно
     } catch (error: any) {
       console.error('Ошибка при создании спринта:', error.response?.data || error.message);

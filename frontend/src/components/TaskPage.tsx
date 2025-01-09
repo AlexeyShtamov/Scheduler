@@ -7,7 +7,7 @@ import { AuthTaskBoard } from './AuthTaskBoard';
 import TaskDialog from './TaskDialog';
 import { mainPagePriorityOptions } from '../const';
 import CreateSprintDialog from './CreateSprintDialog';
-import { getProjects, createBoard, createSprint } from '../services/api';
+import { getProjects, createBoard, createSprint, getSprints } from '../services/api';
 
 export interface Sprint {
   title: string;
@@ -39,45 +39,46 @@ const TaskPage: React.FC = () => {
 
 
   useEffect(() => {
-  const loadBoards = async () => {
-    try {
-      const data = await getProjects(1); // Пример с projectId = 1
-      console.log('Полученные данные:', data);
-
-      if (data && Array.isArray(data.users)) {
-        localStorage.setItem("users", JSON.stringify(data.users));
-        setUsersState(data.users); // Обновляем состояние пользователей
-        console.log('Загруженные пользователи:', data.users); // Выводим пользователей
+    const loadBoards = async () => {
+      try {
+        // Получаем данные по проекту с id 1
+        const data = await getProjects(1); // Это остаётся, если вам всё ещё нужно загружать проект
+  
+        console.log('Полученные данные:', data);
+  
+        if (data && Array.isArray(data.users)) {
+          localStorage.setItem("users", JSON.stringify(data.users));
+          setUsersState(data.users); // Обновляем состояние пользователей
+          console.log('Загруженные пользователи:', data.users); // Выводим пользователей
+        }
+  
+        if (data && data.boardName) {
+          setSelectedBoard(data.boardName);
+          setBoards(prevBoards => [
+            ...prevBoards.filter(board => board.boardName !== data.boardName),
+            { 
+              boardName: data.boardName, 
+              id: data.id,
+              users: data.users, 
+              sprints: data.sprints  
+            }
+          ]);
+        }
+  
+        // Загрузка спринтов для выбранного проекта
+        const sprintsData = await getSprints(1);  // Используем getSprints для загрузки спринтов для проекта с id = 1
+        if (sprintsData && Array.isArray(sprintsData)) {
+          setSprintOptionsState(sprintsData); // Обновляем состояние с спринтами
+          console.log('Загруженные спринты:', sprintsData); // Выводим спринты
+        }
+  
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
       }
-
-      if (data && data.boardName) {
-        setSelectedBoard(data.boardName);
-        // Если это не новая доска, добавляем её в список досок
-        setBoards(prevBoards => [
-          ...prevBoards.filter(board => board.boardName !== data.boardName),
-          { 
-            boardName: data.boardName, 
-            id: data.id,
-            users: data.users, 
-            sprints: data.sprints  
-          }
-        ]);
-      }
-
-      // Если `data.sprints` существует и это массив, обновляем спринты
-      if (data && Array.isArray(data.sprints)) {
-        setSprintOptionsState(data.sprints);
-        console.log('Загруженные спринты:', data.sprints); // Выводим спринты
-      }
-
-
-    } catch (error) {
-      console.error('Ошибка при загрузке данных:', error);
-    }
-  };
-
-  loadBoards();
-}, []);
+    };
+  
+    loadBoards();
+  }, []);
 
   const handleCreateBoard = async () => {
     const newBoard = { boardName: newBoardName, id: 1 };
