@@ -266,8 +266,8 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                                     </LocalizationProvider>
                                     <Autocomplete
                                         options={users}
-                                        value={selectedExecutor ? users.find((user: User) => user.id === selectedExecutor) || null : null}
-                                        onChange={(_, newValue) => setSelectedExecutor(newValue ? newValue.id : '')} // Сохраняем ID
+                                        value={selectedExecutor ? users.find((user: User) => `${user.firstName} ${user.lastName}` === selectedExecutor) || null : null}
+                                        onChange={(_, newValue) => setSelectedExecutor(newValue ?`${newValue.firstName} ${newValue.lastName}` : '')} // Сохраняем ID
                                         renderInput={(params) => <TextField {...params} label="Исполнитель" />}
                                         getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                                     />

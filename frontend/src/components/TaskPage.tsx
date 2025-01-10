@@ -31,27 +31,24 @@ const TaskPage: React.FC = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isCreateSprintDialogOpen, setCreateSprintDialogOpen] = useState(false);
   const [sprintOptionsState, setSprintOptionsState] = useState<Sprint[]>([]);
-  const [selectedSprint, setSelectedSprint] = useState<string>('');
+  const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null); // Изначально 0, для того чтобы не показывался спринт по умолчанию
   const [boards, setBoards] = useState<Board[]>([]); // Доски
   const [isCreateBoardDialogOpen, setCreateBoardDialogOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
 
-
-
   useEffect(() => {
     const loadBoards = async () => {
       try {
-        // Получаем данные по проекту с id 1
-        const data = await getProjects(1); // Это остаётся, если вам всё ещё нужно загружать проект
-  
-        console.log('Полученные данные:', data);
-  
+        
+        const data = await getProjects(1);
+        console.log('Загрузка проекта', data) // Получаем проект с id 1
+
         if (data && Array.isArray(data.users)) {
+          console.log('Данные пользователей:', data.users);
           localStorage.setItem("users", JSON.stringify(data.users));
           setUsersState(data.users); // Обновляем состояние пользователей
-          console.log('Загруженные пользователи:', data.users); // Выводим пользователей
         }
-  
+
         if (data && data.boardName) {
           setSelectedBoard(data.boardName);
           setBoards(prevBoards => [
@@ -64,19 +61,24 @@ const TaskPage: React.FC = () => {
             }
           ]);
         }
-  
+
         // Загрузка спринтов для выбранного проекта
-        const sprintsData = await getSprints(1);  // Используем getSprints для загрузки спринтов для проекта с id = 1
+        const sprintsData = await getSprints(1); // Загружаем спринты
         if (sprintsData && Array.isArray(sprintsData)) {
+          console.log('Спринты получены:', sprintsData);
           setSprintOptionsState(sprintsData); // Обновляем состояние с спринтами
-          console.log('Загруженные спринты:', sprintsData); // Выводим спринты
+          
+          // Устанавливаем первый спринт как выбранный, если спринты существуют
+          if (sprintsData.length > 0) {
+            setSelectedSprint(sprintsData[0].id); // Устанавливаем первый спринт как выбранный
+          }
         }
-  
+
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
       }
     };
-  
+
     loadBoards();
   }, []);
 
@@ -84,7 +86,7 @@ const TaskPage: React.FC = () => {
     const newBoard = { boardName: newBoardName, id: 1 };
 
     try {
-      await createBoard(newBoard); // Отправляем запрос на создание доски
+      await createBoard(newBoard); // Создаем доску
       const updatedBoards = await getProjects(1); // Получаем обновленные доски
       setBoards(updatedBoards); // Обновляем состояние
       setSelectedBoard(newBoardName);
@@ -108,7 +110,7 @@ const TaskPage: React.FC = () => {
 
     try {
       createSprint(newSprint);
-      setSelectedSprint(newSprintName);
+      setSelectedSprint(newSprint);
     } catch (error) {
       console.error('Ошибка при создании спринта:', error);
     }
@@ -173,12 +175,13 @@ const TaskPage: React.FC = () => {
           disablePortal
           options={[...sprintOptionsState.map((option) => option.title), 'Добавить новый спринт']}
           sx={{ width: 300 }}
-          value={selectedSprint}
+          value={selectedSprint ? selectedSprint.title : ''} // Используем selectedSprint для отображения выбранного
           onChange={(_, value) => {
             if (value === 'Добавить новый спринт') {
               setCreateSprintDialogOpen(true);
             } else {
-              setSelectedSprint(value || '');
+              const selected = sprintOptionsState.find((sprint) => sprint.title === value);
+              setSelectedSprint(selected || null); // Находим и передаем объект спринта
             }
           }}
           renderInput={(params) => <TextField {...params} label="Спринт" />}
@@ -186,9 +189,11 @@ const TaskPage: React.FC = () => {
       </p>
       <div className="header-card-line"></div>
       <AuthTaskBoard 
-        users={usersState}  // Передаем список пользователей
-        setUsersState={setUsersState}  // Передаем setUsersState
-        filterPriority={mainPagePriority} 
+        users={usersState}
+        setUsersState={setUsersState}
+        filterPriority={mainPagePriority}
+        sprintOptionsState={sprintOptionsState}
+        sprintId={selectedSprint?.id || 0}
       />
       <CreateSprintDialog
         open={isCreateSprintDialogOpen}
@@ -220,4 +225,4 @@ const TaskPage: React.FC = () => {
   );
 };
 
-export { TaskPage }
+export { TaskPage };

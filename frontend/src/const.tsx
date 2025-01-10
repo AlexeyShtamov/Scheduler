@@ -42,10 +42,9 @@ const mainPagePriorityOptions = [
       appointmentDate: string | null
       completionDate: string | null
       sprint: string | null
-      files: File[]
+      files: File[] | []
       status: string
     };
-    
     
     const users = localStorage.getItem("users")
     

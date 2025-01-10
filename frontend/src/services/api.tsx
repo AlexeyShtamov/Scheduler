@@ -87,5 +87,50 @@ export const registerUser = async (userData: {
       throw error; // Пробрасываем ошибку
     }
   };
+
+  export const getTasks = async (sprintId: number, status: 'APPOINTED' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED') => {
+    try {
+      const response = await api.get('/api/tasks', {
+        params: { sprintId, status }, // Передаем параметры запроса
+      });
+      return response.data; // Возвращаем полученные данные
+    } catch (error: any) {
+      console.error('Ошибка при загрузке задач:', error.response?.data || error.message);
+      throw error; // Пробрасываем ошибку дальше
+    }
+  };
+
+  export const createTask = async (
+    userId: number,
+    projectId: number,
+    taskData: {
+      id: number;
+      title: string;
+      description: string;
+      priority: string;
+      startDate: string | null;
+      endDate: string | null,
+      assignee: string | null,
+      author: string | null,
+      sprint: {
+        id: number;
+        title: string;
+        startTime: string | null;
+        endTime: string | null;
+      } | null;
+      status: string;
+    }
+  ) => {
+    try {
+      const response = await api.post('/api/tasks', taskData, {
+        params: { userId, projectId }, // Передаем userId и projectId как параметры запроса
+      });
+      return response.data; // Возвращаем данные из ответа
+    } catch (error: any) {
+      console.error('Ошибка при создании задачи:', error.response?.data || error.message);
+      throw error.response?.data || error.message; // Пробрасываем ошибку
+    }
+  };
+
   
   export default api;
