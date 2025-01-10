@@ -15,8 +15,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import CloseButton from '../assets/close-button.svg';
 import closer from '../assets/closer.png';
-import { priorityOptions, users, Task, sprintOptions } from '../const';
+import { priorityOptions, Task } from '../const';
 import DeleteIcon from '@mui/icons-material/Delete'
+import { User } from './AuthTaskBoard';
+import { Sprint } from './TaskPage';
+
 
 interface CreateTaskDialogProps {
     open: boolean;
@@ -24,9 +27,10 @@ interface CreateTaskDialogProps {
     onCreateTask: (newTask: Task) => void;
     onDeleteTask: (taskId: string) => void;
     initialTask?: Task;
+    sprintOptionsState: Sprint[];
 }
 
-const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTask, onDeleteTask, initialTask }) => {
+const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTask, onDeleteTask, initialTask, sprintOptionsState }) => {
     const [dialogPriority, setDialogPriority] = useState<string>(initialTask?.priority || '');
     const [selectedExecutor, setSelectedExecutor] = useState<string | null>(initialTask?.executor || null);
     const [selectedAuthor, setSelectedAuthor] = useState<string | null>(initialTask?.author || null);
@@ -41,6 +45,8 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
 
     const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : null;
     const formattedCompletionDate = completionDate ? completionDate.format('YYYY-MM-DD') : null;
+    const usersBoard = localStorage.getItem("users")
+    const users = usersBoard ? JSON.parse(usersBoard) : [];
 
     useEffect(() => {
         if (appointmentDate && completionDate) {
@@ -124,7 +130,8 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
             appointmentDate: formattedAppointmentDate,
             completionDate: formattedCompletionDate,
             sprint: sprint,
-            files
+            files,
+            status: 'APPOINTED'
         };
 
         onCreateTask(newTask);
@@ -231,7 +238,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                         <Autocomplete
                             options={priorityOptions}
                             value={{ label: dialogPriority }}
-                            onChange={(_, value) => setDialogPriority(value?.label || 'ВСЕ ПРИОРИТЕТЫ')}
+                            onChange={(_, value) => setDialogPriority(value?.label || '')}
                             renderInput={(params) => <TextField {...params} label="Приоритет" />}
                             sx={{ maxWidth: '250px' }}
                         />
@@ -259,19 +266,19 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                                     </LocalizationProvider>
                                     <Autocomplete
                                         options={users}
-                                        value={selectedExecutor ? users.find(user => user.label === selectedExecutor) || null : null}
-                                        onChange={(_, newValue) => setSelectedExecutor(newValue?.label || '')}
+                                        value={selectedExecutor ? users.find((user: User) => `${user.firstName} ${user.lastName}` === selectedExecutor) || null : null}
+                                        onChange={(_, newValue) => setSelectedExecutor(newValue ?`${newValue.firstName} ${newValue.lastName}` : '')} // Сохраняем ID
                                         renderInput={(params) => <TextField {...params} label="Исполнитель" />}
-                                        sx={{ minWidth: '250px' }}
+                                        getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                                     />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <Autocomplete
                                         disablePortal
-                                        options={sprintOptions.map(option => option.title)}
+                                        options={sprintOptionsState ? sprintOptionsState.map((option) => option.title) : []} // Используем массив спринтов из состояния
                                         sx={{ width: 300 }}
-                                        value={sprint || null}
-                                        onChange={(_, newValue) => setSprint(newValue || null)}
+                                        value={sprint || null} // selectedSprint - это состояние для выбранного спринта
+                                        onChange={(_, newValue) => setSprint(newValue || null)} // Обновляем выбранный спринт
                                         renderInput={(params) => <TextField {...params} label="Спринт" />}
                                     />
                                     <TextField
@@ -285,9 +292,10 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                                     />
                                     <Autocomplete
                                         options={users}
-                                        value={selectedAuthor ? users.find(user => user.label === selectedAuthor) || null : null}
-                                        onChange={(_, newValue) => setSelectedAuthor(newValue?.label || '')}
+                                        value={selectedAuthor ? users.find((user: User) => `${user.firstName} ${user.lastName}` === selectedAuthor) || null : null}
+                                        onChange={(_, newValue) => setSelectedAuthor(newValue ? `${newValue.firstName} ${newValue.lastName}` : '')}
                                         renderInput={(params) => <TextField {...params} label="Автор задачи" />}
+                                        getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                                         sx={{ minWidth: '250px' }}
                                     />
                                 </div>
