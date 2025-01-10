@@ -34,7 +34,7 @@ public class Task {
     /**
      * Трудозатраты в часах
      */
-    private double ttz = 0;
+    private String ttz = "";
     private Status status;
     private String review;
     /**

@@ -13,7 +13,7 @@ public record TaskDTO(Long id,
                       LocalDate endDate,
                       String assignee,
                       String author,
-                      double ttz,
+                      String ttz,
                       SprintDTO sprint,
                       Status status,
                       String review) {

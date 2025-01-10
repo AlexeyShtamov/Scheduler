@@ -16,7 +16,7 @@ public record UpdateTaskDTO(
         @NotNull @NotEmpty Priority priority,
         LocalDate assignedDate,
         LocalDate deadline,
-        @NotEmpty double ttz,
+        @NotEmpty String ttz,
         @NotNull @NotEmpty Status status,
         String review,
         Person worker,
