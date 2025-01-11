@@ -5,7 +5,7 @@ import logo from '../assets/logo.svg';
 import avatar from '../assets/avatar2.svg';
 import { AuthTaskBoard } from './AuthTaskBoard';
 import TaskDialog from './TaskDialog';
-import { mainPagePriorityOptions } from '../const';
+import { mainPagePriorityOptions, priorityOptions } from '../const';
 import CreateSprintDialog from './CreateSprintDialog';
 import { getProjects, createBoard, createSprint, getSprints } from '../services/api';
 
@@ -143,7 +143,7 @@ const TaskPage: React.FC = () => {
             />
             <Autocomplete
               disablePortal
-              options={mainPagePriorityOptions}
+              options={priorityOptions}
               className="custom-autocomplete"
               sx={{ width: 300 }}
               value={{ label: mainPagePriority }}

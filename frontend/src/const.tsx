@@ -8,9 +8,9 @@ const mainPagePriorityOptions = [
   ];
   
   const priorityOptions = [
-    { label: 'НИЗКИЙ' },
-    { label: 'СРЕДНИЙ' },
-    { label: 'ВЫСОКИЙ' },
+    { label: 'LOW' },
+    { label: 'MEDIUM' },
+    { label: 'HIGH' },
   ];
   
   const boardOptions = [
@@ -30,22 +30,7 @@ const mainPagePriorityOptions = [
        appointmentDate: '2024-12-20', 
        completionDate: '2024-12-25' }
       ]
-
-    export type Task = {
-      id: string
-      title: string
-      time: string
-      executor: string | null
-      author: string | null
-      description: string
-      priority: string
-      appointmentDate: string | null
-      completionDate: string | null
-      sprint: string | null
-      files: File[] | []
-      status: string
-    };
-    
+ 
     const users = localStorage.getItem("users")
     
     export {mainPagePriorityOptions, priorityOptions, users, sprintOptions, boardOptions, }

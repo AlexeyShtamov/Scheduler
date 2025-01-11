@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import checkIcon from '../assets/check.svg';
 import arrow from '../assets/triangle.svg';
-import { Task } from '../const';
+import { Task } from './TaskDialog';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import TaskDialog from './TaskDialog';
 import dayjs from 'dayjs';
 import { Sprint } from './TaskPage';
 import { getTasks } from '../services/api';
 
-
 export interface User {
-  id: string;
+  id: Number;
   firstName: string;
   lastName: string;
   email: string;
@@ -21,19 +20,24 @@ type AuthTaskBoardProps = {
   setUsersState: React.Dispatch<React.SetStateAction<User[]>>;
   filterPriority: string;
   sprintOptionsState: Sprint[];
-  sprintId: number  // передаем ID спринта
+  sprintId: number; // передаем ID спринта
 };
 
 const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
   users,
   filterPriority,
   sprintOptionsState,
-  sprintId,  // получаем ID спринта
+  sprintId,
 }) => {
   const [visibleTasks, setVisibleTasks] = useState<boolean[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasksByStatus, setTasksByStatus] = useState<Record<string, Task[]>>({
+    APPOINTED: [],
+    IN_PROGRESS: [],
+    REVIEW: [],
+    COMPLETED: [],
+  });
 
   const allStatuses: Array<'APPOINTED' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED'> = [
     'APPOINTED',
@@ -41,29 +45,32 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
     'REVIEW',
     'COMPLETED',
   ];
-  
+
   // Загружаем задачи с сервера
   useEffect(() => {
     const fetchTasksForAllStatuses = async () => {
       try {
-        // Делаем параллельные запросы для всех статусов
         const taskPromises = allStatuses.map((status) => getTasks(sprintId, status));
         const taskResults = await Promise.all(taskPromises);
-  
-        // Объединяем результаты
-        const allTasks = taskResults.flat(); // flat() объединяет массив массивов в один массив
-  
-        console.log('Все задачи:', allTasks);
-        // Здесь можно обновить состояние с задачами, если нужно
-        // setTasks(allTasks);
+
+        const updatedTasksByStatus = allStatuses.reduce((acc, status, index) => {
+          acc[status] = taskResults[index];
+          return acc;
+        }, {} as Record<string, Task[]>);
+
+        setTasksByStatus(updatedTasksByStatus);
+
+        // Логируем задачи для каждого статуса
+        console.log('Загруженные задачи:');
+        for (const status of allStatuses) {
+          console.log(`${status}:`, updatedTasksByStatus[status]);
+        }
       } catch (error) {
         console.error('Ошибка при загрузке задач:', error);
       }
     };
-  
-    if (sprintId) {
-      fetchTasksForAllStatuses();
-    }
+
+    fetchTasksForAllStatuses();
   }, [sprintId]);
 
   useEffect(() => {
@@ -82,18 +89,6 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
       : tasks.filter((task) => task.priority.trim().toLowerCase() === normalizedPriority);
   };
 
-  const handleDeleteBoard = (taskId: string) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-  };
-
-  const handleSaveTask = (updatedTask: Task) => {
-    const updatedTasks = tasks.map((task) => 
-      task.id === updatedTask.id ? updatedTask : task
-    );
-    setTasks(updatedTasks);
-  };
-
   const toggleTasksVisibility = (index: number) => {
     setVisibleTasks((prev) => {
       const newVisibility = [...prev];
@@ -104,24 +99,40 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
-    if (!destination) return;
-
-    const draggedTask = tasks.find((task) => task.id === draggableId);
+    if (!destination || source.droppableId === destination.droppableId) return;
+  
+    // Находим перемещаемую задачу по ID
+    const draggedTask = Object.values(tasksByStatus).flat().find((task) => task.id.toString() === draggableId);
+  
     if (!draggedTask) return;
-
-    const updatedTasks = tasks.filter((task) => task.id !== draggableId);
-    updatedTasks.push({
-      ...draggedTask,
-      status: destination.droppableId, // Обновляем статус в зависимости от колонки
+  
+    // Обновляем задачи
+    setTasksByStatus((prev) => {
+      const sourceTasks = [...prev[source.droppableId]];
+      const destinationTasks = [...prev[destination.droppableId]];
+  
+      // Удаляем задачу из исходного списка
+      const draggedTaskIndex = sourceTasks.findIndex((task) => task.id === draggedTask.id);
+      if (draggedTaskIndex !== -1) {
+        sourceTasks.splice(draggedTaskIndex, 1);
+      }
+  
+      // Обновляем статус задачи и добавляем в новый список
+      draggedTask.status = destination.droppableId;
+      destinationTasks.push(draggedTask);
+  
+      return {
+        ...prev,
+        [source.droppableId]: sourceTasks,
+        [destination.droppableId]: destinationTasks,
+      };
     });
-
-    setTasks(updatedTasks);
   };
 
   const calculateTaskDuration = (task: Task) => {
-    if (task.appointmentDate && task.completionDate) {
-      const appointment = dayjs(task.appointmentDate);
-      const completion = dayjs(task.completionDate);
+    if (task.startDate && task.endDate) {
+      const appointment = dayjs(task.startDate);
+      const completion = dayjs(task.endDate);
       const durationInDays = completion.diff(appointment, 'day');
       return `${durationInDays} дн.`;
     }
@@ -129,8 +140,34 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
   };
 
   const handleCreateTask = (newTask: Task) => {
-    const updatedTasks = [...tasks, newTask];
-    setTasks(updatedTasks);
+    const assignee = users.find(user => `${user.firstName} ${user.lastName}` === newTask.assignee);
+    
+    if (assignee) {
+      // Создаём задачу только для выбранного пользователя
+      setTasksByStatus((prev) => {
+        const updatedTasks = { ...prev };
+  
+        // Добавляем задачу в правильный статус
+        updatedTasks[newTask.status] = [
+          ...updatedTasks[newTask.status],
+          { ...newTask, assignee: assignee.firstName + ' ' + assignee.lastName }
+        ];
+  
+        return updatedTasks;
+      });
+    } else {
+      console.error('Задача должна быть назначена пользователю');
+    }
+  };
+
+  const handleDeleteBoard = (taskId: Number) => {
+    setTasksByStatus((prev) => {
+      const updatedTasks = { ...prev };
+      for (const status in updatedTasks) {
+        updatedTasks[status] = updatedTasks[status].filter((task) => task.id !== taskId);
+      }
+      return updatedTasks;
+    });
   };
 
   return (
@@ -143,65 +180,72 @@ const AuthTaskBoard: React.FC<AuthTaskBoardProps> = ({
       </div>
 
       {users.map((user, userIndex) => (
-        <div key={userIndex} className="user-section">
-          <div className="main-line"></div>
-          <h2>
-            {user.firstName} {user.lastName}
-            <img
-              src={arrow}
-              alt="arrow"
-              onClick={() => toggleTasksVisibility(userIndex)}
-              className={visibleTasks[userIndex] ? 'arrow-icon' : 'arrow-icon rotated'}
-            />
-          </h2>
-          <div className="main-line"></div>
-          <div className="task-columns">
-            <DragDropContext onDragEnd={onDragEnd}>
-              {(['assigned', 'inProgress', 'review', 'completed'] as const).map((column) => (
-                <Droppable key={column} droppableId={column}>
-                  {(provided) => (
-                    <div
-                      className="column"
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {visibleTasks[userIndex] &&
-                        tasks.filter(task => task.status === column).length ? (
-                          filterTasks(tasks.filter(task => task.status === column)).map((task) => (
-                            <Draggable
-                              key={task.id}
-                              draggableId={task.id}
-                              index={tasks.indexOf(task)}
-                            >
-                              {(provided) => (
-                                <div
-                                  className="task-card"
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  onClick={() => handleTaskClick(task)}
-                                >
-                                  <div className="task-card-header">
-                                    <span className="task-title">{task.title}</span>
-                                  </div>
-                                  <div className="task-card-footer">
-                                    <img src={checkIcon} alt="Галочка" className="check-icon" />
-                                    <span className="time-text">{calculateTaskDuration(task)}</span>
-                                  </div>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))
-                        ) : null}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              ))}
-            </DragDropContext>
-          </div>
-        </div>
-      ))}
+  <div key={userIndex} className="user-section">
+    <div className="main-line"></div>
+    <h2>
+      {user.firstName} {user.lastName}
+      <img
+        src={arrow}
+        alt="arrow"
+        onClick={() => toggleTasksVisibility(userIndex)}
+        className={visibleTasks[userIndex] ? 'arrow-icon' : 'arrow-icon rotated'}
+      />
+    </h2>
+    <div className="main-line"></div>
+    <div className="task-columns">
+      <DragDropContext onDragEnd={onDragEnd}>
+        {allStatuses.map((column) => (
+          <Droppable key={column} droppableId={column}>
+            {(provided) => (
+              <div
+                className="column"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {visibleTasks[userIndex] &&
+                  tasksByStatus[column]?.length > 0 &&
+                  filterTasks(tasksByStatus[column])
+                    .filter((task) => task.assignee === `${user.firstName} ${user.lastName}`) // Фильтрация по исполнителю
+                    .map((task, index) => (
+                      <Draggable
+                        key={task.id}
+                        draggableId={task.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            className="task-card"
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            onClick={() => handleTaskClick(task)}
+                          >
+                            <div className="task-card-header">
+                              <span className="task-title">{task.title}</span>
+                            </div>
+                            <div className="task-card-footer">
+                              <img
+                                src={checkIcon}
+                                alt="Галочка"
+                                className="check-icon"
+                              />
+                              <span className="time-text">
+                                {calculateTaskDuration(task)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        ))}
+      </DragDropContext>
+    </div>
+  </div>
+))}
 
       <TaskDialog
         open={isDialogOpen}

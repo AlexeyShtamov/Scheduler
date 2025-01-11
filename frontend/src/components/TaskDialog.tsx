@@ -15,32 +15,48 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import CloseButton from '../assets/close-button.svg';
 import closer from '../assets/closer.png';
-import { priorityOptions, Task } from '../const';
+import { priorityOptions } from '../const';
 import DeleteIcon from '@mui/icons-material/Delete'
 import { User } from './AuthTaskBoard';
 import { Sprint } from './TaskPage';
+import { createTask } from '../services/api';
 
 
 interface CreateTaskDialogProps {
     open: boolean;
     onClose: () => void;
     onCreateTask: (newTask: Task) => void;
-    onDeleteTask: (taskId: string) => void;
+    onDeleteTask: (taskId: Number) => void;
     initialTask?: Task;
     sprintOptionsState: Sprint[];
 }
 
+export type Task = {
+    id: number
+    title: string
+    ttz: string
+    assignee: string | null
+    author: string | null
+    description: string
+    priority: string
+    startDate: string | null
+    endDate: string | null
+    sprint: Sprint | null
+    files: File[] | []
+    status: string
+};
+
 const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTask, onDeleteTask, initialTask, sprintOptionsState }) => {
     const [dialogPriority, setDialogPriority] = useState<string>(initialTask?.priority || '');
-    const [selectedExecutor, setSelectedExecutor] = useState<string | null>(initialTask?.executor || null);
+    const [selectedExecutor, setSelectedExecutor] = useState<string | null>(initialTask?.assignee || null);
     const [selectedAuthor, setSelectedAuthor] = useState<string | null>(initialTask?.author || null);
     const [files, setFiles] = useState<File[]>(initialTask?.files || []);
-    const [appointmentDate, setAppointmentDate] = useState<dayjs.Dayjs | null>(initialTask?.appointmentDate ? dayjs(initialTask.appointmentDate) : null);
-    const [completionDate, setCompletionDate] = useState<dayjs.Dayjs | null>(initialTask?.completionDate ? dayjs(initialTask.completionDate) : null);
+    const [appointmentDate, setAppointmentDate] = useState<dayjs.Dayjs | null>(initialTask?.startDate ? dayjs(initialTask.startDate) : null);
+    const [completionDate, setCompletionDate] = useState<dayjs.Dayjs | null>(initialTask?.endDate ? dayjs(initialTask.endDate) : null);
     const [taskTitle, setTaskTitle] = useState(initialTask?.title || '');
-    const [taskTime, setTaskTime] = useState(initialTask?.time || '');
+    const [taskTime, setTaskTime] = useState(initialTask?.ttz || '');
     const [taskDescription, setTaskDescription] = useState(initialTask?.description || '');
-    const [sprint, setSprint] = useState<string | null>(initialTask?.sprint || null);
+    const [sprint, setSprint] = useState<Sprint | null>(initialTask?.sprint || null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const formattedAppointmentDate = appointmentDate ? appointmentDate.format('YYYY-MM-DD') : null;
@@ -60,14 +76,14 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
     useEffect(() => {
         if (initialTask && open) {
             setDialogPriority(initialTask.priority || '');
-            setSelectedExecutor(initialTask.executor || null);
+            setSelectedExecutor(initialTask.assignee || null);
             setSelectedAuthor(initialTask.author || null);
-            setAppointmentDate(initialTask.appointmentDate ? dayjs(initialTask.appointmentDate) : null);
-            setCompletionDate(initialTask.completionDate ? dayjs(initialTask.completionDate) : null);
+            setAppointmentDate(initialTask.startDate ? dayjs(initialTask.startDate) : null);
+            setCompletionDate(initialTask.endDate ? dayjs(initialTask.endDate) : null);
             setTaskTitle(initialTask.title || '');
-            setTaskTime(initialTask.time || '');
+            setTaskTime(initialTask.ttz || '');
             setTaskDescription(initialTask.description || '');
-            setSprint(initialTask.sprint || '')
+            setSprint(initialTask.sprint || null)
             setFiles(initialTask.files || []);
         } else if (!open) {
             resetFields(); // Если initialTask отсутствует, сбрасываем поля
@@ -116,27 +132,39 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
         setFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
     };
 
-    const handleCreateTask = () => {
+    const handleCreateTask = async () => {
+        // Получаем список пользователей из localStorage
 
-
-        const newTask: Task = {
-            id: initialTask?.id || `task-${Math.floor(Math.random() * 1000000)}-${Date.now()}`,
+        const newTaskData = {
+            id: initialTask?.id ? Number(initialTask.id) : Math.floor(Math.random() * 1000000),
             title: taskTitle || 'Без названия',
-            time: taskTime || 'Не указано',
-            executor: selectedExecutor,
-            author: selectedAuthor,
-            description: taskDescription,
+            description: taskDescription || '',
             priority: dialogPriority,
-            appointmentDate: formattedAppointmentDate,
-            completionDate: formattedCompletionDate,
-            sprint: sprint,
-            files,
-            status: 'APPOINTED'
+            startDate: formattedAppointmentDate,
+            endDate: formattedCompletionDate,
+            assignee: selectedExecutor,
+            author: selectedAuthor,
+            ttz: taskTime || 'Не указано',
+            sprint: sprint ? {
+                id: sprint.id,
+                title: sprint.title,
+                startDate: sprint.startDate,
+                endDate: sprint.endDate,
+                projectId: sprint.projectId
+            } : null,
+            status: 'APPOINTED',
+            files: files
         };
 
-        onCreateTask(newTask);
-        handleClose();
-        console.log(newTask)
+        try {
+            // Создаем задачу
+            await createTask(newTaskData);
+            onCreateTask(newTaskData);
+            handleClose();
+            console.log('Задача успешно создана:', newTaskData);
+        } catch (error) {
+            console.error('Ошибка при создании задачи:', error);
+        } 
     };
 
     return (
@@ -267,7 +295,7 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                                     <Autocomplete
                                         options={users}
                                         value={selectedExecutor ? users.find((user: User) => `${user.firstName} ${user.lastName}` === selectedExecutor) || null : null}
-                                        onChange={(_, newValue) => setSelectedExecutor(newValue ?`${newValue.firstName} ${newValue.lastName}` : '')} // Сохраняем ID
+                                        onChange={(_, newValue) => setSelectedExecutor(newValue ? `${newValue.firstName} ${newValue.lastName}` : '')}
                                         renderInput={(params) => <TextField {...params} label="Исполнитель" />}
                                         getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                                     />
@@ -275,10 +303,11 @@ const TaskDialog: React.FC<CreateTaskDialogProps> = ({ open, onClose, onCreateTa
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <Autocomplete
                                         disablePortal
-                                        options={sprintOptionsState ? sprintOptionsState.map((option) => option.title) : []} // Используем массив спринтов из состояния
+                                        options={sprintOptionsState ? sprintOptionsState : []}
                                         sx={{ width: 300 }}
-                                        value={sprint || null} // selectedSprint - это состояние для выбранного спринта
-                                        onChange={(_, newValue) => setSprint(newValue || null)} // Обновляем выбранный спринт
+                                        value={sprint || null}
+                                        onChange={(_, newValue) => setSprint(newValue || null)}
+                                        getOptionLabel={(option) => option.title}
                                         renderInput={(params) => <TextField {...params} label="Спринт" />}
                                     />
                                     <TextField

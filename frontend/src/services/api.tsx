@@ -2,29 +2,38 @@ import axios from "axios";
 
 const API_BASE_URL = 'http://localhost:8081';
 
+// Экземпляр для запросов с авторизацией
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem("authToken")}` // Извлекаем токен из localStorage
+    'Authorization': `Bearer ${localStorage.getItem("authToken")}`,
+  },
+});
+
+// Экземпляр для запросов без авторизации
+export const publicApi = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
   },
 });
 
 export const registerUser = async (userData: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    password: string;
-    repeatPassword: string;
-  }) => {
-    try {
-      const response = await api.post('/people', userData);
-      return response.data; // Успешный ответ
-    } catch (error: any) {
-      throw error.response?.data || error.message; // Обработка ошибок
-    }
-  };
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  password: string;
+  repeatPassword: string;
+}) => {
+  try {
+    const response = await publicApi.post('/people', userData);
+    return response.data; // Успешный ответ
+  } catch (error: any) {
+    throw error.response?.data || error.message; // Обработка ошибок
+  }
+};
 
   export const loginUser = async (credentials: { email: string; password: string }) => {
     try {
@@ -101,17 +110,16 @@ export const registerUser = async (userData: {
   };
 
   export const createTask = async (
-    userId: number,
-    projectId: number,
     taskData: {
       id: number;
       title: string;
       description: string;
       priority: string;
       startDate: string | null;
-      endDate: string | null,
-      assignee: string | null,
-      author: string | null,
+      endDate: string | null;
+      assignee: string | null;
+      author: string | null;
+      ttz: string | null;
       sprint: {
         id: number;
         title: string;
@@ -121,9 +129,11 @@ export const registerUser = async (userData: {
       status: string;
     }
   ) => {
+    const projectId = 1
+    const userId = localStorage.getItem("personId");
     try {
       const response = await api.post('/api/tasks', taskData, {
-        params: { userId, projectId }, // Передаем userId и projectId как параметры запроса
+        params: { userId, projectId }, // Передаем userId и projectId как параметры в строку запроса
       });
       return response.data; // Возвращаем данные из ответа
     } catch (error: any) {
