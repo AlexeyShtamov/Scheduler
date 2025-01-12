@@ -1,7 +1,7 @@
 package ru.develop.schedule.application.impl;
 
 import ch.qos.logback.core.util.StringUtil;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -16,9 +16,9 @@ import ru.develop.schedule.extern.repositories.ProjectRepository;
 import java.util.Set;
 
 @Service
-@Slf4j
 public class ProjectServiceImpl implements ProjectService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ProjectServiceImpl.class);
     private final ProjectRepository projectRepository;
 
     private final ProjectPersonService projectPersonService;

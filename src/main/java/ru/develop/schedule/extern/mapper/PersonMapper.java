@@ -56,7 +56,7 @@ public class PersonMapper {
         );
     }
 
-    public Person fromCreateAdminDTOToPerson(CreateAdminDTO createAdminDTO){
+    public Person fromCreateAdminDTOToPerson(CreateAdminDTO createAdminDTO) {
         Person person = new Person();
         person.setFirstName(createAdminDTO.firstName());
         person.setLastName(createAdminDTO.lastName());

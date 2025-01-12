@@ -1,7 +1,6 @@
 package ru.develop.schedule.application.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.develop.schedule.application.services.ProjectPersonService;
@@ -16,14 +15,19 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class SprintServiceImpl implements SprintService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SprintServiceImpl.class);
     private final SprintRepository sprintRepository;
     private final ProjectService projectService;
 
     private final ProjectPersonService projectPersonService;
+
+    public SprintServiceImpl(SprintRepository sprintRepository, ProjectService projectService, ProjectPersonService projectPersonService) {
+        this.sprintRepository = sprintRepository;
+        this.projectService = projectService;
+        this.projectPersonService = projectPersonService;
+    }
 
     @Transactional(readOnly = true)
     @Override

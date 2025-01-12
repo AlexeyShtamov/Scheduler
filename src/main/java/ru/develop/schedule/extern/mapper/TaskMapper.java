@@ -1,20 +1,23 @@
 package ru.develop.schedule.extern.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.develop.schedule.application.services.PersonService;
 import ru.develop.schedule.application.services.SprintService;
 import ru.develop.schedule.domain.Task;
-import ru.develop.schedule.extern.dto.TaskPersonDto;
 import ru.develop.schedule.extern.dto.TaskDTO;
 
 @Component
-@RequiredArgsConstructor
 public class TaskMapper {
 
     private final PersonService personService;
     private final SprintService sprintService;
     private final SprintMapper sprintMapper;
+
+    public TaskMapper(PersonService personService, SprintService sprintService, SprintMapper sprintMapper) {
+        this.personService = personService;
+        this.sprintService = sprintService;
+        this.sprintMapper = sprintMapper;
+    }
 
     public TaskDTO getTaskDTOFromTask(Task task) {
         return new TaskDTO(

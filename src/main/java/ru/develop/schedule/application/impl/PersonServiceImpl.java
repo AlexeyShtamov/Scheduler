@@ -2,7 +2,7 @@ package ru.develop.schedule.application.impl;
 
 import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.SimpleMailMessage;
@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class PersonServiceImpl implements UserDetailsService, PersonService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PersonServiceImpl.class);
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProjectPersonRepository projectPersonRepository;
@@ -60,10 +60,10 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     @Transactional
     public Person save(Person person, String repeatPassword) throws PersonIsAlreadyExist, PasswordMismatchException {
 
-        if (personRepository.findByEmail(person.getEmail()).isPresent()){
+        if (personRepository.findByEmail(person.getEmail()).isPresent()) {
             throw new PersonIsAlreadyExist("Person with email " + person.getEmail() + " is already exist");
         }
-        if (!person.getPassword().equals(repeatPassword)){
+        if (!person.getPassword().equals(repeatPassword)) {
             throw new PasswordMismatchException("Passwords don't match");
         }
 
@@ -74,25 +74,25 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Transactional
-    public Person updateProfile(Long id, Person updatePerson){
+    public Person updateProfile(Long id, Person updatePerson) {
 
         Person person = personRepository.findById(id)
                 .orElseThrow(() ->
                         new NullPointerException("No person with id " + id));
 
-        if (updatePerson.getFirstName() != null && !updatePerson.getFirstName().equals(person.getFirstName())){
+        if (updatePerson.getFirstName() != null && !updatePerson.getFirstName().equals(person.getFirstName())) {
             person.setFirstName(updatePerson.getFirstName());
         }
-        if (updatePerson.getLastName() != null && !updatePerson.getLastName().equals(person.getLastName())){
+        if (updatePerson.getLastName() != null && !updatePerson.getLastName().equals(person.getLastName())) {
             person.setLastName(updatePerson.getLastName());
         }
-        if (updatePerson.getEmail() != null && !updatePerson.getEmail().equals(person.getEmail())){
+        if (updatePerson.getEmail() != null && !updatePerson.getEmail().equals(person.getEmail())) {
             person.setEmail(updatePerson.getEmail());
         }
-        if (updatePerson.getTimeZone() != null && !updatePerson.getTimeZone().equals(person.getTimeZone())){
+        if (updatePerson.getTimeZone() != null && !updatePerson.getTimeZone().equals(person.getTimeZone())) {
             person.setTimeZone(updatePerson.getTimeZone());
         }
-        if (!updatePerson.getDescription().equals(person.getDescription())){
+        if (!updatePerson.getDescription().equals(person.getDescription())) {
             person.setDescription(updatePerson.getDescription());
         }
 
@@ -102,19 +102,19 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
     @Transactional
-    public Person updateContacts(Long id, Person updatePerson){
+    public Person updateContacts(Long id, Person updatePerson) {
 
         Person person = personRepository.findById(id)
                 .orElseThrow(() ->
                         new NullPointerException("No person with id " + id));
 
-        if (!updatePerson.getPhoneNumber().equals(person.getFirstName())){
+        if (!updatePerson.getPhoneNumber().equals(person.getFirstName())) {
             person.setPhoneNumber(updatePerson.getPhoneNumber());
         }
-        if (!updatePerson.getTelegram().equals(person.getTelegram())){
+        if (!updatePerson.getTelegram().equals(person.getTelegram())) {
             person.setTelegram(updatePerson.getTelegram());
         }
-        if (!updatePerson.getVk().equals(person.getVk())){
+        if (!updatePerson.getVk().equals(person.getVk())) {
             person.setVk(updatePerson.getVk());
         }
 
@@ -133,20 +133,19 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
         if (!StringUtil.isNullOrEmpty(password) && password.equals(repeatPassword)) {
             person.setPassword(passwordEncoder.encode(password));
             person = personRepository.save(person);
-        }
-        else throw new IncorrectPasswordException("Your password is null or not match");
+        } else throw new IncorrectPasswordException("Your password is null or not match");
         log.info("{} {}: Person's password is updated", person.getFirstName(), person.getLastName());
         return person;
     }
 
     @Transactional
-    public void delete(Person person){
+    public void delete(Person person) {
         personRepository.delete(person);
         log.info("{} {}: Person is deleted", person.getFirstName(), person.getLastName());
     }
 
     @Transactional
-    public void changeRole(Long projectId, Long personId, String role){
+    public void changeRole(Long projectId, Long personId, String role) {
         ProjectPerson projectPerson = projectPersonRepository.findById(new ProjectPersonId(projectId, personId))
                 .orElseThrow(() -> new NullPointerException("No person with id " + personId + " in project with id " + projectId));
         projectPerson.setRole(Role.valueOf(role));
@@ -165,7 +164,7 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Optional<Person> optionalPerson = personRepository.findByEmail(email);
-        if (optionalPerson.isPresent()){
+        if (optionalPerson.isPresent()) {
             log.info("Person with email {} is founded", email);
             return optionalPerson.get();
         }
@@ -179,7 +178,6 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     }
 
 
-
     @Override
     public Person findByEmail(String email) {
         Person person = personRepository.findByEmail(email).orElseThrow(() -> new NullPointerException("No person with email " + email));
@@ -191,7 +189,7 @@ public class PersonServiceImpl implements UserDetailsService, PersonService {
     public JwtResponse createAuthToken(JwtRequest authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password()));
-        }catch (BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Неправильный логин или пароль");
         }
         UserDetails userDetails = loadUserByUsername(authRequest.email());

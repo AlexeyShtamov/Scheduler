@@ -1,7 +1,6 @@
 package ru.develop.schedule.application.runners;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,10 +10,9 @@ import ru.develop.schedule.domain.enums.Role;
 import ru.develop.schedule.extern.repositories.PersonRepository;
 
 @Component
-@RequiredArgsConstructor
-@Slf4j
 public class AdminInitializer implements CommandLineRunner {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(AdminInitializer.class);
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -23,10 +21,15 @@ public class AdminInitializer implements CommandLineRunner {
     @Value("${admin.password}")
     private String adminPassword;
 
+    public AdminInitializer(PersonRepository personRepository, PasswordEncoder passwordEncoder) {
+        this.personRepository = personRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @Override
     public void run(String... args) {
-        if (personRepository.count() <= 3){
+        if (personRepository.count() <= 3) {
             Person person = new Person();
 
             person.setEmail(adminEmail);

@@ -1,7 +1,6 @@
 package ru.develop.schedule.application.runners;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -10,22 +9,26 @@ import ru.develop.schedule.domain.Project;
 import ru.develop.schedule.domain.ProjectPerson;
 import ru.develop.schedule.domain.ProjectPersonId;
 import ru.develop.schedule.domain.enums.Role;
-import ru.develop.schedule.extern.repositories.PersonRepository;
 import ru.develop.schedule.extern.repositories.ProjectPersonRepository;
 import ru.develop.schedule.extern.repositories.ProjectRepository;
 
 @Component
-@RequiredArgsConstructor
-@Slf4j
 public class ProjectInitializer implements CommandLineRunner {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ProjectInitializer.class);
     private final ProjectRepository projectRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProjectPersonRepository projectPersonRepository;
 
+    public ProjectInitializer(ProjectRepository projectRepository, PasswordEncoder passwordEncoder, ProjectPersonRepository projectPersonRepository) {
+        this.projectRepository = projectRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.projectPersonRepository = projectPersonRepository;
+    }
+
     @Override
     public void run(String... args) throws Exception {
-        if (projectRepository.count() == 0){
+        if (projectRepository.count() == 0) {
             Person person1 = Person.builder()
                     .firstName("Алексей")
                     .lastName("Штамов")

@@ -1,7 +1,6 @@
 package ru.develop.schedule.application.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.develop.schedule.application.services.ProjectPersonService;
@@ -21,13 +20,18 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class TasksServiceImpl implements TasksService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TasksServiceImpl.class);
     private final TasksRepository tasksRepository;
     private final SprintService sprintService;
     private final ProjectPersonService projectPersonService;
+
+    public TasksServiceImpl(TasksRepository tasksRepository, SprintService sprintService, ProjectPersonService projectPersonService) {
+        this.tasksRepository = tasksRepository;
+        this.sprintService = sprintService;
+        this.projectPersonService = projectPersonService;
+    }
 
     @Transactional(readOnly = true)
     @Override
@@ -70,7 +74,7 @@ public class TasksServiceImpl implements TasksService {
             task.setCreateDate(LocalDate.now());
             tasksRepository.save(task);
             log.info("Task created with author {}", currentPerson.getId());
-        }else {
+        } else {
             log.error("Task cannot be null");
             throw new IllegalArgumentException("Task cannot be null");
         }

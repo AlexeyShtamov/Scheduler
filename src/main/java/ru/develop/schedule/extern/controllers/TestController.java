@@ -17,7 +17,7 @@ public class TestController {
     }
 
     @RequestMapping("/some")
-    public ResponseEntity<String> test(){
+    public ResponseEntity<String> test() {
         return new ResponseEntity<>("Test", HttpStatus.OK);
     }
 
