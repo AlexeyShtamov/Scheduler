@@ -1,5 +1,5 @@
 services:
-  codebuddy-app:
+  scheduler-app:
     container_name: scheduler-app
     depends_on:
       - scheduler-db

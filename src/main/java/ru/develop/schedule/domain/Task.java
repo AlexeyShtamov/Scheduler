@@ -27,6 +27,7 @@ public class Task {
      */
     private String title;
     private String description;
+    @Enumerated(EnumType.STRING)
     private Priority priority;
     private LocalDate createDate = LocalDate.now();
     private LocalDate assignDate;
@@ -35,6 +36,7 @@ public class Task {
      * Трудозатраты в часах
      */
     private String ttz = "";
+    @Enumerated(EnumType.STRING)
     private Status status;
     private String review;
     /**
