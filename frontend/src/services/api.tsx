@@ -123,8 +123,8 @@ export const registerUser = async (userData: {
       sprint: {
         id: number;
         title: string;
-        startTime: string | null;
-        endTime: string | null;
+        startDate: string | null;
+        endDate: string | null;
       } | null;
       status: string;
     }
