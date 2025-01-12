@@ -1,15 +1,42 @@
-version: "3.7"
-
 services:
-  db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_DB: scheduler_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      PGDATA: "/var/lib/postgresql/data/"
-    volumes:
-      - ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+  codebuddy-app:
+    container_name: scheduler-app
+    depends_on:
+      - scheduler-db
     ports:
-      - "127.0.0.1:5433:5432"
+      - 8050:8050
+    build:
+      context: .
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD: admin
+      DB_NAME: scheduler
+      DB_HOST: scheduler-db
+      DB_PORT: 5432
+      APP_PORT: 8050
+    restart: unless-stopped
+
+  scheduler-db:
+    container_name: codeBuddy_db
+    image: 'postgres:16.3-alpine'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=scheduler
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: /frontend
+    ports:
+      - "3020:4173"
+    environment:
+      VITE_PORT: 8000
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2048M
+    restart: unless-stopped

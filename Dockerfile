@@ -3,11 +3,11 @@ WORKDIR /app
 ARG JAR_FILE=target/schedule-0.0.1-SNAPSHOT.jar
 
 ENV DB_USERNAME=postgres
-ENV DB_PASSWORD=password
-ENV DB_NAME=scheduler_db
+ENV DB_PASSWORD=admin
+ENV DB_NAME=scheduler
 ENV DB_HOST=localhost
-ENV DB_PORT=5433
-ENV APP_PORT=8081
+ENV DB_PORT=5432
+ENV APP_PORT=8050
 
 COPY ${JAR_FILE} app.jar
 

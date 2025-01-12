@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class ProjectPersonId {
     private Long projectId;
     private Long participantId;
-
 }
