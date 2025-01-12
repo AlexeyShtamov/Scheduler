@@ -5,7 +5,7 @@ import logo from '../assets/logo.svg';
 import avatar from '../assets/avatar2.svg';
 import { AuthTaskBoard } from './AuthTaskBoard';
 import TaskDialog from './TaskDialog';
-import { mainPagePriorityOptions, priorityOptions } from '../const';
+import { priorityOptions } from '../const';
 import CreateSprintDialog from './CreateSprintDialog';
 import { getProjects, createBoard, createSprint, getSprints } from '../services/api';
 
